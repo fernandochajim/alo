@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <!-- viewport-fit=cover for modern devices (e.g., with a notch) -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>¿Me quieres?</title>
+  <!-- Google Font for a modern look -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    /* Reset some basic elements */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Poppins', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      overflow: hidden;
+      /* Animated gradient background */
+      background: linear-gradient(45deg, #6a11cb, #2575fc, #ff512f, #f09819);
+      background-size: 400% 400%;
+      animation: gradientAnimation 15s ease infinite;
+    }
+    @keyframes gradientAnimation {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    /* Glassmorphism-style card */
+    .card {
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 20px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      padding: 2rem;
+      width: 90%;
+      max-width: 380px;
+      text-align: center;
+      position: relative;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
+    }
+    .card h1 {
+      font-size: 2.5rem;
+      color: #fff;
+      margin-bottom: 1rem;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
+    }
+    .card p {
+      color: #f0f0f0;
+      margin-bottom: 2rem;
+      font-size: 1.1rem;
+      text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+    }
+    /* Container for the buttons */
+    #buttonArea {
+      position: relative;
+      height: 250px;
+    }
+    /* Base styling for buttons */
+    button {
+      position: absolute;
+      padding: 0.8rem 1.5rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: transform 0.3s ease, background 0.3s ease;
+      user-select: none;
+    }
+    /* "Sí" button fixed at the bottom center */
+    #btnSi {
+      background: #28a745;
+      color: #fff;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 2;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+    #btnSi:hover {
+      background: #218838;
+      transform: translateX(-50%) scale(1.05);
+    }
+    /* "No" button: initial position at the top right */
+    #btnNo {
+      background: #dc3545;
+      color: #fff;
+      top: 20px;
+      right: 20px;
+      z-index: 1;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+    #btnNo:hover {
+      background: #c82333;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>¿Me quieres?</h1>
+    <p>Yo sé que sí</p>
+    <div id="buttonArea">
+      <button id="btnSi">Sí</button>
+      <button id="btnNo">No</button>
+    </div>
+  </div>
+
+  <!-- Confetti library for celebration (loaded from CDN) -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <script>
+    // Function to move the "No" button to a random position within the button area
+    function moveButton() {
+      const container = document.getElementById('buttonArea');
+      const btnNo = document.getElementById('btnNo');
+
+      const containerRect = container.getBoundingClientRect();
+      const btnRect = btnNo.getBoundingClientRect();
+
+      // Calculate the maximum allowed x and y positions so the button stays within the container
+      const maxX = containerRect.width - btnRect.width;
+      const maxY = containerRect.height - btnRect.height;
+
+      // Generate random positions
+      const randomX = Math.floor(Math.random() * maxX);
+      const randomY = Math.floor(Math.random() * maxY);
+
+      // Apply new random position and add a slight random rotation for extra playfulness
+      const randomRotation = Math.floor(Math.random() * 60) - 30; // between -30° and 30°
+      btnNo.style.left = randomX + 'px';
+      btnNo.style.top = randomY + 'px';
+      btnNo.style.transform = `rotate(${randomRotation}deg)`;
+    }
+
+    const btnNo = document.getElementById('btnNo');
+
+    // For non-touch devices, move the button on mouseover and mousedown events
+    btnNo.addEventListener('mouseover', moveButton);
+    btnNo.addEventListener('mousedown', function(e) {
+      e.preventDefault();
+      moveButton();
+    });
+
+    // For touch devices (e.g., iPhone 15), move the button on touchstart
+    btnNo.addEventListener('touchstart', function(e) {
+      e.preventDefault();
+      moveButton();
+    });
+
+    // Prevent any click events on the "No" button
+    btnNo.addEventListener('click', function(e) {
+      e.preventDefault();
+      moveButton();
+    });
+
+    // Action for the "Sí" button: launch confetti and show a playful message
+    document.getElementById('btnSi').addEventListener('click', function() {
+      // Trigger confetti effect
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 }
+      });
+      // Display a celebratory alert after a short delay
+      setTimeout(function() {
+        alert("¡Sabía que dirías que sí!.");
+      }, 300);
+    });
+  </script>
+</body>
+</html>
