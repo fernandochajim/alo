@@ -1,177 +1,332 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <!-- viewport-fit=cover for modern devices (e.g., with a notch) -->
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>¿Me quieres?</title>
-  <!-- Google Font for a modern look -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>100 Razones para Amarte</title>
+  <!-- Fuentes románticas (puedes cambiar a tu gusto) -->
+  <link
+          href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Open+Sans:wght@400;600&display=swap"
+          rel="stylesheet"
+  />
   <style>
-    /* Reset some basic elements */
+    /* RESET BÁSICO */
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
     body {
-      font-family: 'Poppins', sans-serif;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      overflow: hidden;
-      /* Animated gradient background */
-      background: linear-gradient(45deg, #6a11cb, #2575fc, #ff512f, #f09819);
-      background-size: 400% 400%;
-      animation: gradientAnimation 15s ease infinite;
+      font-family: 'Open Sans', sans-serif;
+      color: #333;
+      overflow-x: hidden;
+      /* IMAGEN DE FONDO + overlay oscuro para mejor lectura */
+      background: linear-gradient(
+              rgba(0, 0, 0, 0.5),
+              rgba(0, 0, 0, 0.5)
+      ),
+      url('fondo.jpg') center center / cover no-repeat fixed;
+      /* Ajusta 'fondo.jpg' por la ruta real de tu imagen */
     }
-    @keyframes gradientAnimation {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-    /* Glassmorphism-style card */
-    .card {
-      background: rgba(255, 255, 255, 0.2);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      border-radius: 20px;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      padding: 2rem;
-      width: 90%;
-      max-width: 380px;
-      text-align: center;
-      position: relative;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
-    }
-    .card h1 {
-      font-size: 2.5rem;
-      color: #fff;
-      margin-bottom: 1rem;
-      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
-    }
-    .card p {
-      color: #f0f0f0;
-      margin-bottom: 2rem;
-      font-size: 1.1rem;
-      text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
-    }
-    /* Container for the buttons */
-    #buttonArea {
-      position: relative;
-      height: 250px;
-    }
-    /* Base styling for buttons */
-    button {
-      position: absolute;
-      padding: 0.8rem 1.5rem;
-      font-size: 1.1rem;
-      font-weight: 600;
-      border: none;
-      border-radius: 50px;
-      cursor: pointer;
-      transition: transform 0.3s ease, background 0.3s ease;
-      user-select: none;
-    }
-    /* "Sí" button fixed at the bottom center */
-    #btnSi {
-      background: #28a745;
-      color: #fff;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
+
+    /* CORAZONES FLOTANDO (cada .heart es un corazón que sube) */
+    .heart {
+      position: fixed;
+      bottom: -20px;
+      width: 30px;
+      height: 30px;
+      background: url('data:image/svg+xml;utf8,<svg fill="%23FF4F81" width="64" height="64" viewBox="0 0 32 29.6" xmlns="http://www.w3.org/2000/svg"><path d="M23.6.8c-3.3 0-6.4 1.7-8.1 4.3C13.8 2.5 10.8.8 7.6.8 3.2.8 0 4 0 8.4 0 14.4 6.1 19 12.2 24c2.2 1.9 4.5 3.9 6.8 5.8 2.3-1.9 4.6-3.8 6.8-5.8 6.1-5 12.2-9.6 12.2-15.6 0-4.4-3.2-7.6-7.6-7.6z"/></svg>')
+      no-repeat center/contain;
+      animation: floatUp 5s linear infinite;
+      opacity: 0.8;
       z-index: 2;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      pointer-events: none;
     }
-    #btnSi:hover {
-      background: #218838;
-      transform: translateX(-50%) scale(1.05);
+    @keyframes floatUp {
+      0% {
+        transform: translateY(0) scale(0.7);
+        opacity: 0.8;
+      }
+      50% {
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-120vh) scale(1.1);
+        opacity: 0;
+      }
     }
-    /* "No" button: initial position at the top right */
-    #btnNo {
-      background: #dc3545;
+
+    /* ENCABEZADO */
+    header {
+      text-align: center;
+      padding: 2rem 1rem 1rem;
+      position: relative;
+      z-index: 3; /* Sobre los corazones */
+    }
+    header h1 {
+      font-family: 'Great Vibes', cursive;
+      font-size: 2.6rem;
+      color: #ffffff;
+      text-shadow: 1px 1px 5px rgba(0,0,0,0.6);
+      margin-bottom: 0.5rem;
+    }
+    header .intro-text {
+      max-width: 600px;
+      margin: 0 auto;
+      color: #ffffff;
+      font-size: 1rem;
+      line-height: 1.6;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+    }
+
+    /* CONTENEDOR PRINCIPAL DE LAS RAZONES */
+    .reasons-container {
+      max-width: 600px;
+      margin: 1rem auto 2rem;
+      background-color: rgba(255,255,255,0.75);
+      border-radius: 10px;
+      box-shadow: 0 5px 10px rgba(0,0,0,0.3);
+      padding: 1rem;
+      position: relative;
+      z-index: 3;
+    }
+
+    /* LISTA DE RAZONES */
+    ol {
+      list-style: none;
+      counter-reset: item; /* Para numeración manual */
+      padding: 0;
+      margin: 0;
+    }
+    li {
+      position: relative;
+      margin: 1rem 0;
+      background-color: rgba(255,255,255,0.9);
+      border-radius: 6px;
+      padding: 0.8rem 1rem;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      /* Efecto fade-in al hacer scroll */
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.6s ease;
+    }
+    li::before {
+      counter-increment: item;
+      content: counter(item) ". ";
+      font-weight: 700;
+      color: #ee9ca7;
+      margin-right: 0.5rem;
+    }
+
+    /* SECCIÓN FINAL */
+    .last-reason-title {
+      margin-top: 2rem;
+      text-align: center;
+      font-family: 'Great Vibes', cursive;
+      font-size: 2rem;
       color: #fff;
-      top: 20px;
-      right: 20px;
-      z-index: 1;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      text-shadow: 1px 1px 5px rgba(0,0,0,0.6);
+      position: relative;
+      z-index: 3;
     }
-    #btnNo:hover {
-      background: #c82333;
+    .last-reason-text {
+      max-width: 600px;
+      margin: 1rem auto 3rem;
+      background-color: rgba(255,255,255,0.8);
+      border-radius: 8px;
+      padding: 1rem;
+      font-size: 1rem;
+      line-height: 1.4;
+      text-align: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      position: relative;
+      z-index: 3;
+    }
+
+    footer {
+      text-align: center;
+      font-size: 0.9rem;
+      color: #ffffffdd;
+      margin-bottom: 2rem;
+      position: relative;
+      z-index: 3;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+    }
+
+    /* RESPONSIVE */
+    @media (min-width: 768px) {
+      header h1 {
+        font-size: 3rem;
+      }
+      header .intro-text {
+        font-size: 1.1rem;
+      }
+      .last-reason-title {
+        font-size: 2.4rem;
+      }
+      .last-reason-text {
+        font-size: 1.1rem;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="card">
-    <h1>¿Me quieres?</h1>
-    <p>Yo sé que sí</p>
-    <div id="buttonArea">
-      <button id="btnSi">Sí</button>
-      <button id="btnNo">No</button>
-    </div>
-  </div>
+<header>
+  <h1>100 Razones para Amarte</h1>
+  <p class="intro-text">
+    Lo vi en un tiktok, jaja. Pero me pareció buena idea y decidí hacerlo para ti.
+    Lee todas porfa, tardé horas en escribirlas. 🥺
+  </p>
+</header>
 
-  <!-- Confetti library for celebration (loaded from CDN) -->
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-  <script>
-    // Function to move the "No" button to a random position within the button area
-    function moveButton() {
-      const container = document.getElementById('buttonArea');
-      const btnNo = document.getElementById('btnNo');
+<main class="reasons-container">
+  <ol id="reasonsList">
+    <li>Te amo por tu sonrisa, capaz de iluminar cualquier día.</li>
+    <li>Te amo por esos ojos en los que me pierdo, llenos de ternura.</li>
+    <li>Te amo por tu voz dulce y juguetona, que me calma el corazón incluso en mis peores días.</li>
+    <li>Te amo por tus bromas de “te caes mal”, que en realidad son amor oculto.</li>
+    <li>Te amo por tu manera única de cuidarme, preguntando si comí o si necesito algo cada vez que puedes.</li>
+    <li>Te amo por la fuerza que tienes: trabajas, estudias y vas al gym, neta que orgullo.</li>
+    <li>Te amo por tu paciencia, que me enseña a ser mejor persona cada día.</li>
+    <li>Te amo por tu cabello, que me encanta acariciar mientras estamos acostados.</li>
+    <li>Te amo porque tu risa es contagiosa y convierte cualquier problema en un recuerdo gracioso.</li>
+    <li>Te amo por cómo me motivas a ir al gym, recordándome que cuidar mi salud es importante para los dos (solo quiero que comas rico).</li>
+    <li>Te amo por tu mirada pícara, que me hace sentir deseado y querido a la vez.</li>
+    <li>Te amo por tu sinceridad; aunque a veces duela, sé que nace de tu enorme corazón.</li>
+    <li>Te amo por esos mensajes que me llegan de la nada que me sacan una sonrisa, sin importar la hora.</li>
+    <li>Te amo por compartirme tus sueños y planes de futuro, incluyéndome en ellos.</li>
+    <li>Te amo por las veces que finges estar enojada, solo para terminar abrazándome con más fuerza.</li>
+    <li>Te amo por la forma que me miras cuando te cuento algo.</li>
+    <li>Te amo por la forma que acaricias mi cara y me haces sentir en las nubes</li>
+    <li>Te amo por tu sentido del humor que hace reír con cualquier broma inesperada</li>
+    <li>Te amo por tu carita toda hermosa que quiero llenar de besos cada que veo</li>
+    <li>Te amo por tu paciencia infinita cuando me tardo en contestar; sé que entiendes mis momentos.</li>
+    <li>Te amo por tus ocurrencias espontáneas, que pueden convertir un día sencillo en el mejor de la semana (han sido los mejores días de mi vida)</li>
+    <li>Te amo por tu forma de pensar</li>
+    <li>Te amo por esos “buenos días” y “descansa” que llenan mi día a día de ternura.</li>
+    <li>Te amo por tu habilidad de convertir un chiste simple en el momento más feliz de todo el día.</li>
+    <li>Te amo porque te expresas sin miedo, compartiendo con confianza lo que sientes y piensas.</li>
+    <li>Te amo por cada uno de tus “te extraño”, que me hacen sentir especial y amado.</li>
+    <li>Te amo por la forma en que me abrazas: es como si me envolvieras en un lugar seguro.</li>
+    <li>Te amo por tus “¿ya llegaste?” que hacen que sepa que te preocupas por mi.</li>
+    <li>Te amo por tu cuerpo hermoso, cuyas curvas admiro y respeto, y que me fascina cada día más.</li>
+    <li>Te amo por tu inteligencia, que siempre encuentra la pregunta o la respuesta perfecta.</li>
+    <li>Te amo por mandarme reels graciosos y tiernos, esos que hacen que mi día sea más ligero.</li>
+    <li>Te amo por las historias sobre tu familia, tus amigos, y tu mundo, en las que me incluyes con cariño.</li>
+    <li>Te amo por tus momentos de travesura, cuando sacas a relucir tu lado más juguetón (sabes a lo que me refiero).</li>
+    <li>Te amo por darme consejos sinceros que me llevan a reflexionar y crecer como persona.</li>
+    <li>Te amo por tus “estás con la otra”, que me hacen reír y sentir querido.</li>
+    <li>Te amo por estar conmigo en silencio, demostrando que tu sola presencia ya lo dice todo.</li>
+    <li>Te amo por el amor que demuestras hacia tus gatitos, evidenciando la gran ternura de tu corazón.</li>
+    <li>Te amo por tu forma de ver la vida con valor y optimismo, dándome esperanza.</li>
+    <li>Te amo por tus “me caes mal” en broma, que a los dos minutos se convierten en otro “¿qué haces?”.</li>
+    <li>Te amo por cada “¿estás bien?” que me deja claro lo mucho que te importo.</li>
+    <li>Te amo por tu ternura cuando quedamos bien despeinados los dos.</li>
+    <li>Te amo por tus grandes sueños, que me contagian ilusión y me hacen creer en lo imposible.</li>
+    <li>Te amo porque te esfuerzas cada día, inspirándome a mí a hacerlo también.</li>
+    <li>Te amo por tu dedicación al gym, que me reta a ser más constante y disciplinado (que vas y ni tomas pre).</li>
+    <li>Te amo por este día de lluvia que volvimos mágico</li>
+    <li>Te amo por esa mirada cómplice que me lanza chispas de amor, incluso sin hablar.</li>
+    <li>Te amo por como caminas, me enamora.</li>
+    <li>Te amo por los enojos de broma, que terminan en risas y un “ven y dame un abrazo” lleno de cariño.</li>
+    <li>Te amo por tu creatividad para hallar el lado divertido en cualquier problema (aunque en el momento te me estreses mucho).</li>
+    <li>Te amo por tu corazón noble, siempre dispuesto a ayudar sin pedir nada a cambio.</li>
+    <li>Te amo por tus labios, que me regalan besos llenos de ternura.</li>
+    <li>Te amo porque confías en mí, abriéndome tu alma y haciéndome sentir parte de tu vida.</li>
+    <li>Te amo por las fotos espontáneas que me mandas, donde reflejas esa esencia muy tuya que tanto me fascina.</li>
+    <li>Te amo por defender tus ideales, demostrando tus firmes convicciones.</li>
+    <li>Te amo por tu sonrisa pícara cuando planeas algo en secreto, sacando a relucir tu lado travieso.</li>
+    <li>Te amo por tu generosidad, siempre atenta a las necesidades de los demás (pero solo tus amigos).</li>
+    <li>Te amo por convertir una simple plática en una conexión profunda con solo mirarme.</li>
+    <li>Te amo por tu piel suave, ese contacto que me transmite paz y me recuerda lo afortunado que soy.</li>
+    <li>Te amo por los halagos que me dices, haciéndome sentir valioso e importante.</li>
+    <li>Te amo por tu honestidad, incluso en momentos difíciles, porque buscas lo mejor para ambos.</li>
+    <li>Te amo por compartir tus antojos conmigo y disfrutar cada bocado a mi lado.</li>
+    <li>Te amo por tus hacerme enojar de broma</li>
+    <li>Te amo por esos arranques de risa que hacen que se me olvide todo lo malo.</li>
+    <li>Te amo por cuidar de mi salud, preguntándome si comí o si dormí bien cada que me notas raro.</li>
+    <li>Te amo por ser mi compañera de travesuras, planeando pequeñas bromas para reír juntos.</li>
+    <li>Te amo por la profundidad de tus pensamientos, que abren mi mente a nuevas perspectivas.</li>
+    <li>Te amo por la ternura que demuestras a cada instante, incluso sin darte cuenta de ello.</li>
+    <li>Te amo por tu luz interior, esa que brilla en cada gesto y palabra que das.</li>
+    <li>Te amo por tu silueta preciosa, que me roba la atención y me hace sentir afortunado.</li>
+    <li>Te amo por confiarme tus proyectos, dejándome soñar a tu lado con nuevos horizontes.</li>
+    <li>Te amo porque conoces mis defectos y, aun así, me abrazas con amor incondicional.</li>
+    <li>Te amo por las conversaciones sinceras, donde exploramos nuestras alegrías y miedos sin juzgarnos.</li>
+    <li>Te amo por tu risa a carcajadas que disuelve cualquier tensión y me hace verte aún más bella.</li>
+    <li>Te amo por protegerme muy a tu manera</li>
+    <li>Te amo por los apodos cariñosos (amo cuando me dices corazón) que hacen que me sienta único en tu vida.</li>
+    <li>Te amo por saber perdonar, comprendiendo que los errores nos ayudan a crecer.</li>
+    <li>Te amo porque me haces sentir importante solo con un susurro o una mirada.</li>
+    <li>Te amo por tu forma de ver la vida, que compartimos muchas metas.</li>
+    <li>Te amo por dejarme ser parte de tu día a día, invitándome a compartir pequeños y grandes momentos.</li>
+    <li>Te amo por no ocultarme nada o si lo haces, por no lastimarme.</li>
+    <li>Te amo por tu independencia, que aunque tengas mi ayuda, siempre intentas resolver las cosas sola.</li>
+    <li>Te amo por tus mañitas bonitas que me muestran tu lado más auténtico y cercano.</li>
+    <li>Te amo por abrirme tu corazón sin reservas, dejándome ver cada emoción genuina.</li>
+    <li>Te amo por respetar mi espacio, equilibrando perfectamente libertad y compañía.</li>
+    <li>Te amo por ser mi hater número uno cuando hago algo bien y cuando me equivoco.</li>
+    <li>Te amo por la valentía con la que enfrentas tus miedos, que aunque todos tenemos, tú me impulsas a superar los míos.</li>
+    <li>Te amo por los recuerdos que creamos a diario, dando sentido a cada momento que pasamos juntos.</li>
+    <li>Te amo por tus invitaciones de último minuto a planes inesperados, llenos de risas y aventuras.</li>
+    <li>Te amo por la forma en que me tomas del cuello, haciéndome sentir conectado a ti.</li>
+    <li>Te amo por cómo te brillan los ojos cuando hablas de algo que te apasiona, o me cuentas lo que sea.</li>
+    <li>Te amo por tu curiosidad incansable, siempre con ganas de aprender y compartir descubrimientos o chismes.</li>
+    <li>Te amo por esos pequeños gestos, regalarme reese's o recordarme una fecha importante.</li>
+    <li>Te amo porque con solo verte alegras mis días</li>
+    <li>Te amo por la manera en que celebras mis logros, haciéndome sentir orgullo de lo que consigo.</li>
+    <li>Te amo por tus enojos fugaces, que se disipan con un abrazo o un beso lleno de perdón.</li>
+    <li>Te amo por la intensidad con que vives el presente, enseñándome a disfrutar cada instante.</li>
+    <li>Te amo por la calidez de tus manos, que son mi refugio cuando estoy cansado o triste.</li>
+    <li>Te amo por los silencios cómodos en los que no hace falta hablar para entendernos.</li>
+    <li>Te amo por la esperanza que despiertas en mí, recordándome que hay mucho por vivir juntos.</li>
+    <li>Te amo porque, de principio a fin, eres quien le da sentido a mi vida y me hace creer en el amor verdadero.</li>
+  </ol>
+</main>
 
-      const containerRect = container.getBoundingClientRect();
-      const btnRect = btnNo.getBoundingClientRect();
+<h2 class="last-reason-title">La única razón para irme:</h2>
+<div class="last-reason-text">
+  Sería que no me amaras… pero, como me amas, <br/>
+  <strong>no me iré nunca.</strong>
+</div>
 
-      // Calculate the maximum allowed x and y positions so the button stays within the container
-      const maxX = containerRect.width - btnRect.width;
-      const maxY = containerRect.height - btnRect.height;
+<footer>Hecho con todo mi amor, solo para ti, mi alo bonita.
+</footer>
 
-      // Generate random positions
-      const randomX = Math.floor(Math.random() * maxX);
-      const randomY = Math.floor(Math.random() * maxY);
-
-      // Apply new random position and add a slight random rotation for extra playfulness
-      const randomRotation = Math.floor(Math.random() * 60) - 30; // between -30° and 30°
-      btnNo.style.left = randomX + 'px';
-      btnNo.style.top = randomY + 'px';
-      btnNo.style.transform = `rotate(${randomRotation}deg)`;
-    }
-
-    const btnNo = document.getElementById('btnNo');
-
-    // For non-touch devices, move the button on mouseover and mousedown events
-    btnNo.addEventListener('mouseover', moveButton);
-    btnNo.addEventListener('mousedown', function(e) {
-      e.preventDefault();
-      moveButton();
+<!-- SCRIPTS -->
+<script>
+  // Efecto fade-in de las razones al hacer scroll
+  const reasons = document.querySelectorAll('li');
+  function mostrarRazonesAlScroll() {
+    const triggerBottom = window.innerHeight * 0.9;
+    reasons.forEach((reason) => {
+      const reasonTop = reason.getBoundingClientRect().top;
+      if (reasonTop < triggerBottom) {
+        reason.style.opacity = 1;
+        reason.style.transform = 'translateY(0)';
+      }
     });
+  }
+  window.addEventListener('scroll', mostrarRazonesAlScroll);
+  mostrarRazonesAlScroll();
 
-    // For touch devices (e.g., iPhone 15), move the button on touchstart
-    btnNo.addEventListener('touchstart', function(e) {
-      e.preventDefault();
-      moveButton();
-    });
-
-    // Prevent any click events on the "No" button
-    btnNo.addEventListener('click', function(e) {
-      e.preventDefault();
-      moveButton();
-    });
-
-    // Action for the "Sí" button: launch confetti and show a playful message
-    document.getElementById('btnSi').addEventListener('click', function() {
-      // Trigger confetti effect
-      confetti({
-        particleCount: 100,
-        spread: 70,
-        origin: { y: 0.6 }
-      });
-      // Display a celebratory alert after a short delay
-      setTimeout(function() {
-        alert("¡Sabía que dirías que sí!.");
-      }, 300);
-    });
-  </script>
+  // Animación de corazoncitos flotando
+  function createHeart() {
+    const heart = document.createElement('div');
+    heart.classList.add('heart');
+    // Posición horizontal aleatoria
+    heart.style.left = Math.random() * 100 + 'vw';
+    // Duración random de la animación (entre 4s y 8s)
+    const duration = 4 + Math.random() * 4;
+    heart.style.animationDuration = duration + 's';
+    document.body.appendChild(heart);
+    // Remover el corazón del DOM después de acabar animación
+    setTimeout(() => {
+      heart.remove();
+    }, (duration + 2) * 1000);
+  }
+  // Crear un corazoncito cada 600ms
+  setInterval(createHeart, 600);
+</script>
 </body>
 </html>
