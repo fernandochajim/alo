@@ -3,203 +3,390 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nuestra Historia</title>
+    <title>Examen Interactivo de Morfología</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Estilo general */
         body {
-            font-family: 'Quicksand', sans-serif;
-            background-color: #121212;
-            color: #e0e0e0;
-            overflow-x: hidden;
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* slate-50 */
         }
-
-        /* Contenedor de cada escena */
-        .story-container {
-            width: 100%;
-            min-height: 100vh;
+        .quiz-container {
+            min-height: 450px;
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 4rem 1rem;
-            position: relative;
-            opacity: 0;
-            transform: translateY(30px);
-            transition: opacity 1s ease, transform 1s ease;
         }
-        
-        .story-container.visible {
+        .option-label {
+            transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+        }
+        .option-label.selected {
+            background-color: #e0e7ff; /* indigo-100 */
+            border-color: #6366f1; /* indigo-500 */
+        }
+        .correct-answer-label {
+            background-color: #dcfce7 !important; /* green-100 */
+            border-color: #22c55e !important; /* green-500 */
+            color: #15803d; /* green-700 */
+        }
+        .incorrect-answer-label {
+            background-color: #fee2e2 !important; /* red-100 */
+            border-color: #ef4444 !important; /* red-500 */
+            color: #b91c1c; /* red-700 */
+        }
+        .explanation {
+            border-left-width: 4px;
+            padding-left: 1rem;
+            margin-top: 1rem;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        .explanation.visible {
             opacity: 1;
             transform: translateY(0);
         }
-
-        /* Estilo base para los GIFs, Imágenes y texto principal */
-        .icon-img {
-            width: 220px; /* Aumentamos el tamaño para que se vean mejor */
-            height: 220px;
-            object-fit: cover; /* Usamos cover para que llenen el espacio */
-            border-radius: 1rem; /* Bordes redondeados */
+        .progress-bar-fill {
+            transition: width 0.4s ease-in-out;
         }
-        .main-text {
-            font-size: clamp(2rem, 8vw, 4rem);
-            font-weight: 700;
-            text-align: center;
-            line-height: 1.2;
-        }
-        .icon-label {
-            font-size: 1.25rem;
-            margin-top: 1.5rem;
-            font-weight: 500;
+        /* Fade transition for question change */
+        .question-fade-exit {
             opacity: 0;
-            transition: opacity 1s ease 0.5s;
+            transition: opacity 0.2s ease-in;
         }
-        .visible .icon-label {
+        .question-fade-enter {
             opacity: 1;
+            transition: opacity 0.2s ease-out;
         }
-
-        /* --- Colores Específicos para cada etiqueta --- */
-        .risas-label { color: #fde047; }
-        .sushi-label { color: #fda4af; }
-        .rata-label { color: #4ade80; }
-        .abrazos-label { color: #d2a679; }
-        .elote-label { color: #fcd34d; }
-        .gato-label { color: #f0abfc; }
-        .gym-label { color: #e5e7eb; }
-        .chisme-label { color: #6ee7b7; }
-        .llamada-label { color: #93c5fd; }
-        .preocupacion-label { color: #fb7185; }
-        .apoyo-label { color: #c4b5fd; }
-        .tiktok-label { color: #fff; }
-        .carino-label { color: #f9a8d4; }
-        .hate-label { color: #a5b4fc; }
-        .amor-label { color: #f87171; }
-
     </style>
 </head>
-<body>
+<body class="text-slate-800">
 
-    <!-- 1. Intro -->
-    <div class="story-container">
-        <h1 class="main-text" style="color: #e0e0e0;">Mi vida a tu lado se ve así:</h1>
-    </div>
+    <div class="container mx-auto max-w-lg p-4 min-h-screen flex flex-col justify-center">
 
-    <!-- 2. Risas -->
-    <div class="story-container">
-        <img src="https://media1.tenor.com/m/b3ObCed06N0AAAAd/monkeyphobic.gif" alt="Changuito riendo" class="icon-img">
-        <p class="icon-label risas-label">Risas</p>
-    </div>
+        <!-- Header -->
+        <header class="text-center mb-6">
+            <h1 class="text-3xl sm:text-4xl font-bold text-indigo-600">Examen de Morfología 🩺❤️</h1>
+            <p class="mt-2 text-slate-500">¡Demuestra cuánto sabes, mi amor!</p>
+        </header>
 
-    <!-- 3. Sushi -->
-    <div class="story-container">
-        <img src="https://media1.tenor.com/m/BEOmex2Kg8wAAAAd/cat-steals-sushi-cat.gif" alt="Gato robando sushi" class="icon-img">
-        <p class="icon-label sushi-label">Sushi</p>
-    </div>
+        <!-- Quiz Area -->
+        <div id="quiz-area" class="bg-white p-6 sm:p-8 rounded-2xl shadow-xl w-full">
+            
+            <!-- Progress Bar -->
+            <div id="progress-container" class="mb-4">
+                <div class="flex justify-between items-center mb-1 text-sm text-slate-500">
+                    <span>Progreso</span>
+                    <span id="progress-text">Pregunta 1/50</span>
+                </div>
+                <div class="w-full bg-slate-200 rounded-full h-2.5">
+                    <div id="progress-bar" class="bg-indigo-500 h-2.5 rounded-full progress-bar-fill" style="width: 2%"></div>
+                </div>
+            </div>
 
-    <!-- 4. Rata Verde -->
-    <div class="story-container">
-        <img src="https://media.tenor.com/pC3Rix10LpYAAAAi/huh-what.gif" alt="Rata verde" class="icon-img">
-        <p class="icon-label rata-label">Rata Verde</p>
-    </div>
+            <div class="quiz-container">
+                <!-- Question Content -->
+                <div id="question-content" class="flex-grow">
+                    <p id="question-text" class="text-lg font-semibold mb-4 min-h-[60px]"></p>
+                    <div id="options-container" class="space-y-3"></div>
+                </div>
+    
+                <!-- Explanation Area -->
+                <div id="explanation-box" class="explanation p-4 rounded-lg bg-slate-50 text-slate-700 hidden"></div>
+    
+                <!-- Navigation -->
+                <div class="flex justify-between items-center mt-6 pt-4 border-t border-slate-200">
+                    <button id="prev-btn" class="py-2 px-5 bg-slate-200 text-slate-700 font-semibold rounded-full hover:bg-slate-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">Anterior</button>
+                    <button id="check-btn" class="py-2 px-5 bg-indigo-500 text-white font-semibold rounded-full hover:bg-indigo-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">Revisar</button>
+                    <button id="next-btn" class="py-2 px-5 bg-indigo-500 text-white font-semibold rounded-full hover:bg-indigo-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed hidden">Siguiente</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Results Section (Initially Hidden) -->
+        <div id="results-container" class="hidden text-center bg-white p-8 rounded-2xl shadow-xl">
+             <h2 class="text-3xl font-bold text-indigo-600 mb-4">¡Resultados Finales!</h2>
+            <div class="text-center text-lg">
+                <p>Respuestas Correctas: <span id="score" class="font-bold text-green-600">0</span> de <span id="total-questions" class="font-bold">0</span></p>
+                <p class="text-5xl font-bold my-4" id="percentage">0%</p>
+                <p class="mt-4 text-slate-600 text-base" id="final-message"></p>
+            </div>
+        </div>
 
-    <!-- 5. Entendimiento -->
-    <div class="story-container">
-        <h1 class="main-text" style="color: #c4b5fd;">Solo tú y yo nos entendemos</h1>
-    </div>
-
-    <!-- 6. Abrazos -->
-    <div class="story-container">
-        <img src="https://media1.tenor.com/m/wJJh6D4GVr4AAAAC/hugs.gif" alt="Abrazos" class="icon-img">
-        <p class="icon-label abrazos-label">Abrazos</p>
-    </div>
-
-    <!-- 7. Elotes con Maruchan -->
-    <div class="story-container">
-        <img src="https://media1.tenor.com/m/KyLhtvc3JRQAAAAC/silly-cat-brainwormism.gif" alt="Gato con maruchan" class="icon-img">
-        <p class="icon-label elote-label">Elotes con Maruchan</p>
-    </div>
-
-    <!-- 8. Gatitos -->
-    <div class="story-container">
-        <img src="https://media1.tenor.com/m/m8fues6Z9-MAAAAd/meow-kittens.gif" alt="Gatitos maullando" class="icon-img">
-        <p class="icon-label gato-label">Gatitos</p>
-    </div>
-
-    <!-- 9. Gym -->
-    <div class="story-container">
-        <img src="https://media1.tenor.com/m/g2kCTsNgDBYAAAAd/monkey-exercise-zzsoobn.gif" alt="Chango haciendo ejercicio" class="icon-img">
-        <p class="icon-label gym-label">Gym</p>
-    </div>
-
-    <!-- 10. Chisme -->
-    <div class="story-container">
-        <img src="https://media.tenor.com/xFNgUArQzdoAAAAi/huhaa.gif" alt="Chisme" class="icon-img">
-        <p class="icon-label chisme-label">Chisme</p>
-    </div>
-
-    <!-- 11. Llamadas de buenas noches -->
-    <div class="story-container">
-        <img src="https://media1.tenor.com/m/Z9r8tsSFaiUAAAAd/c-luna.gif" alt="Luna de buenas noches" class="icon-img">
-        <p class="icon-label llamada-label">Llamadas de buenas noches</p>
-    </div>
-
-    <!-- 12. Preocupación mutua -->
-    <div class="story-container">
-        <img src="https://media1.tenor.com/m/JmIO6iINveIAAAAd/omg.gif" alt="Preocupación" class="icon-img">
-        <p class="icon-label preocupacion-label">Preocupación mutua</p>
-    </div>
-
-    <!-- 13. Apoyo mutuo -->
-    <div class="story-container">
-        <img src="https://media1.tenor.com/m/nJusDpCoDi0AAAAd/dog-dog-helper.gif" alt="Perro ayudando" class="icon-img">
-        <p class="icon-label apoyo-label">Apoyo mutuo</p>
-    </div>
-
-    <!-- 14. 100 tiktoks al día -->
-    <div class="story-container">
-        <img src="https://media1.tenor.com/m/BNt_S_tXbS4AAAAd/fadsfantasy-monkey-phone.gif" alt="Chango viendo el celular" class="icon-img">
-        <p class="icon-label tiktok-label">100 tiktoks al día</p>
-    </div>
-
-    <!-- 15. Cariñitos -->
-    <div class="story-container">
-        <img src="https://media1.tenor.com/m/y8IeZNZvUVoAAAAC/cat-kitten.gif" alt="Gato dando cariño" class="icon-img">
-        <p class="icon-label carino-label">Cariñitos</p>
-    </div>
-
-    <!-- 16. Hate -->
-    <div class="story-container">
-        <img src="https://media.tenor.com/UXzfDZ9_VwYAAAAi/cat-laughing.gif" alt="Gato riendo" class="icon-img">
-        <p class="icon-label hate-label">Hate</p>
-    </div>
-
-    <!-- 17. Mucho Amor -->
-    <div class="story-container">
-        <img src="https://media1.tenor.com/m/ymXSixt1grwAAAAC/dog-love.gif" alt="Perro dando amor" class="icon-img">
-        <p class="icon-label amor-label">Mucho amor</p>
-    </div>
-
-    <!-- 18. Final -->
-    <div class="story-container">
-        <h1 class="main-text" style="background: linear-gradient(90deg, #f0abfc, #4ade80, #93c5fd); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Te amo mi chocomila</h1>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const sections = document.querySelectorAll('.story-container');
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('visible');
+        const questions = [
+            // RAMAS DE LA MORFOLOGÍA
+            { q: "¿Qué rama de la morfología estudia el desarrollo prenatal?", o: ["Histología", "Embriología", "Anatomía Patológica", "Citología"], a: "Embriología", e: "La Embriología se especializa en el estudio de todo el desarrollo antes del nacimiento." },
+            { q: "¿Cuál es el objeto de estudio de la Histología?", o: ["Las células", "Los órganos", "Los tejidos a nivel microscópico", "Las enfermedades"], a: "Los tejidos a nivel microscópico", e: "La Histología es el estudio microscópico de la estructura y función de los tejidos." },
+            { q: "La ciencia que estudia la estructura del cuerpo humano es la:", o: ["Fisiología", "Anatomía", "Embriología", "Patología"], a: "Anatomía", e: "La Anatomía es la ciencia fundamental que estudia la forma y estructura del cuerpo." },
+            
+            // PLANIMETRÍA Y EJES
+            { q: "Un plano que divide el cuerpo en una parte anterior y otra posterior se llama:", o: ["Plano Sagital", "Plano Transversal", "Plano Coronal o Frontal", "Plano Oblicuo"], a: "Plano Coronal o Frontal", e: "El plano Coronal o Frontal realiza un corte vertical que separa el cuerpo en anterior (ventral) y posterior (dorsal)." },
+            { q: "El plano Sagital divide el cuerpo en:", o: ["Parte superior e inferior", "Parte anterior y posterior", "Parte derecha e izquierda", "Partes desiguales"], a: "Parte derecha e izquierda", e: "El plano Sagital es un corte vertical que divide el cuerpo en una mitad derecha y otra izquierda." },
+            { q: "¿Qué plano usarías para dividir el cuerpo en una sección craneal y otra caudal?", o: ["Plano Sagital", "Plano Transversal", "Plano Frontal", "Eje Longitudinal"], a: "Plano Transversal", e: "El plano Transversal realiza un corte horizontal, separando el cuerpo en una parte superior (craneal) y otra inferior (caudal)." },
+            { q: "El eje Cefalocaudal también es conocido como:", o: ["Anteroposterior", "Transversal", "Longitudinal", "Horizontal"], a: "Longitudinal", e: "El eje Cefalocaudal o Longitudinal recorre el cuerpo de arriba hacia abajo." },
+            
+            // TÉRMINOS DE POSICIÓN
+            { q: "El término 'Proximal' describe una estructura que está:", o: ["Más cerca de la línea media", "Más alejada del tronco", "Más cerca del tronco o punto de origen", "En la superficie del cuerpo"], a: "Más cerca del tronco o punto de origen", e: "'Proximal' indica cercanía al punto de origen de una extremidad o al tronco." },
+            { q: "¿Cuál es el término opuesto a 'Superior' o 'Craneal'?", o: ["Ventral", "Dorsal", "Lateral", "Inferior o Caudal"], a: "Inferior o Caudal", e: "'Inferior' o 'caudal' se refiere a una estructura que está más abajo o más cerca de los pies." },
+            { q: "Si una estructura está más cerca de la línea media del cuerpo, se dice que es:", o: ["Lateral", "Distal", "Medial", "Proximal"], a: "Medial", e: "'Medial' se refiere a lo que está más cerca del plano sagital medio del cuerpo." },
+            
+            // POSICIÓN ANATÓMICA
+            { q: "¿Cómo deben estar las palmas de las manos en la posición anatómica?", o: ["Mirando hacia atrás", "Mirando hacia los lados", "Mirando hacia adelante", "Apoyadas en los muslos"], a: "Mirando hacia adelante", e: "En la posición anatómica de referencia, las palmas de las manos se dirigen hacia el frente (posición de supinación)." },
+
+            // CAVIDADES CORPORALES
+            { q: "¿En qué cavidad se encuentra el corazón?", o: ["Cavidad Pleural", "Cavidad Pericárdica", "Canal Vertebral", "Cavidad Abdominal"], a: "Cavidad Pericárdica", e: "El corazón está alojado en la cavidad Pericárdica, que se encuentra en el mediastino dentro de la cavidad torácica." },
+            { q: "La cavidad craneal y el canal vertebral juntos forman la:", o: ["Cavidad Ventral", "Cavidad Abdominopélvica", "Cavidad Torácica", "Cavidad Dorsal"], a: "Cavidad Dorsal", e: "La Cavidad Dorsal protege el sistema nervioso central y se divide en la cavidad craneal y el canal vertebral." },
+            { q: "El Mediastino es una subdivisión de la cavidad:", o: ["Craneal", "Pélvica", "Torácica", "Abdominal"], a: "Torácica", e: "El mediastino es el espacio central de la cavidad torácica, entre las cavidades pleurales, que contiene al corazón, grandes vasos, etc." },
+            
+            // DIVISIÓN CORPORAL
+            { q: "El tórax, el abdomen y la pelvis son subdivisiones del:", o: ["Miembro Superior", "Tronco", "Miembro Inferior", "Cuello"], a: "Tronco", e: "El tronco es la parte central del cuerpo que se divide en tórax, abdomen y pelvis." },
+            { q: "El antebrazo se encuentra entre:", o: ["El hombro y el brazo", "El brazo y la mano", "La muñeca y los dedos", "La cadera y el muslo"], a: "El brazo y la mano", e: "El miembro superior se divide en brazo (hombro a codo), antebrazo (codo a muñeca) y mano." },
+            
+            // NIVELES DE ORGANIZACIÓN
+            { q: "En la jerarquía de organización, ¿qué nivel se encuentra entre el nivel celular y el nivel de órganos?", o: ["Nivel Químico", "Nivel Tisular", "Nivel de Sistemas", "Nivel de Organismo"], a: "Nivel Tisular", e: "Las células se agrupan para formar tejidos (nivel tisular), y los tejidos se agrupan para formar órganos." },
+            { q: "El nivel más complejo de organización biológica es el:", o: ["Nivel Celular", "Nivel de Órganos", "Nivel de Aparatos y Sistemas", "Nivel de Organismo"], a: "Nivel de Organismo", e: "El organismo representa el conjunto de todos los sistemas funcionando de manera coordinada, constituyendo el nivel más alto de organización." },
+
+            // SISTEMAS CORPORALES
+            { q: "¿Qué sistema es responsable de la producción de hormonas?", o: ["Sistema Nervioso", "Sistema Endocrino", "Sistema Linfático", "Sistema Urinario"], a: "Sistema Endocrino", e: "El sistema Endocrino regula procesos corporales a través de la producción y secreción de hormonas." },
+            { q: "La piel y sus anexos (pelo, uñas) forman el sistema:", o: ["Esquelético", "Muscular", "Tegumentario", "Cardiovascular"], a: "Tegumentario", e: "El sistema Tegumentario es el sistema de cobertura del cuerpo, compuesto por la piel y sus faneras." },
+            
+            // RAMAS DE LA ANATOMÍA
+            { q: "La anatomía que estudia el cuerpo mediante técnicas de imagen como Rayos X o TC es la:", o: ["Anatomía Clínica", "Anatomía de Superficie", "Anatomía Radiológica", "Anatomía Microscópica"], a: "Anatomía Radiológica", e: "Esta rama se especializa en el estudio del cuerpo vivo a través de imágenes diagnósticas." },
+            { q: "Si se compara la anatomía de un humano con la de un primate, se está aplicando la:", o: ["Anatomía del Desarrollo", "Anatomía Patológica", "Anatomía Regional", "Anatomía Comparada"], a: "Anatomía Comparada", e: "La Anatomía Comparada estudia y compara las estructuras de diferentes especies para entender sus similitudes y diferencias evolutivas." },
+            { q: "¿Qué incluye la Anatomía Microscópica?", o: ["Citología e Histología", "Embriología y Radiología", "Sistémica y Regional", "Clínica y Aplicada"], a: "Citología e Histología", e: "Requiere el uso de un microscopio e incluye el estudio de las células (Citología) y los tejidos (Histología)." },
+            
+            // IMAGENOLOGÍA
+            { q: "¿Qué técnica de imagen utiliza un campo magnético potente y ondas de radio?", o: ["Tomografía Computarizada (TC)", "Ultrasonografía", "Resonancia Magnética (RM)", "Radiología Convencional"], a: "Resonancia Magnética (RM)", e: "La RM es ideal para ver tejidos blandos y no utiliza radiación ionizante, basándose en campos magnéticos y ondas de radio." },
+            { q: "En una radiografía, una estructura que se ve oscura (negra) se denomina:", o: ["Radiopaca", "Radiolúcida", "Ecorefringente", "Hipointensa"], a: "Radiolúcida", e: "Las estructuras menos densas, como el aire en los pulmones, permiten el paso de los Rayos X y se ven oscuras o radiolúcidas." },
+            { q: "¿Cuál de estas técnicas de imagen NO utiliza radiación ionizante?", o: ["Radiología Convencional", "Tomografía Computarizada (TC)", "Medicina Nuclear", "Ultrasonografía (Ecografía)"], a: "Ultrasonografía (Ecografía)", e: "La ecografía utiliza ondas de sonido de alta frecuencia, por lo que es segura y no implica exposición a radiación ionizante." },
+            { q: "La Tomografía por Emisión de Positrones (PET) es única porque muestra:", o: ["La densidad de los huesos", "La estructura de los órganos", "La actividad metabólica de las células", "El flujo sanguíneo en tiempo real"], a: "La actividad metabólica de las células", e: "El PET es una técnica de medicina nuclear que evalúa la función de los tejidos midiendo su actividad metabólica." },
+            
+            // PIEL Y FANERAS
+            { q: "¿Cuál es la capa más profunda de la piel?", o: ["Epidermis", "Dermis", "Hipodermis", "Fascia Profunda"], a: "Hipodermis", e: "La Hipodermis (o tejido subcutáneo) es la capa más profunda, compuesta principalmente por tejido adiposo." },
+            { q: "Los queratinocitos, melanocitos y células de Langerhans se encuentran en la:", o: ["Dermis", "Hipodermis", "Epidermis", "Fascia Superficial"], a: "Epidermis", e: "Estas células son componentes clave de la Epidermis, la capa más externa de la piel." },
+            { q: "El estrato más superficial de la epidermis, compuesto por células muertas, es el:", o: ["Estrato Basal", "Estrato Espinoso", "Estrato Córneo", "Estrato Granuloso"], a: "Estrato Córneo", e: "El estrato córneo es la capa más externa y protectora de la epidermis." },
+            { q: "La dermis se divide en dos capas:", o: ["Papilar y Reticular", "Basal y Espinoso", "Superficial y Profunda", "Externa e Interna"], a: "Papilar y Reticular", e: "La dermis tiene una capa superficial (Papilar) y una más profunda y gruesa (Reticular)." },
+            { q: "Los vasos sanguíneos, nervios y folículos pilosos se alojan principalmente en la:", o: ["Epidermis", "Dermis", "Hipodermis", "Estrato Córneo"], a: "Dermis", e: "La Dermis es la capa que contiene la mayoría de las estructuras de soporte y anexos de la piel." },
+            { q: "El pelo y las uñas son conocidos como:", o: ["Glándulas", "Faneras", "Fascias", "Tejidos"], a: "Faneras", e: "Las faneras o anexos cutáneos son estructuras derivadas de la piel, como pelos, uñas y glándulas." },
+            { q: "Las glándulas sudoríparas que ayudan a la termorregulación son principalmente las:", o: ["Apocrinas", "Ecrinas", "Sebáceas", "Mamarias"], a: "Ecrinas", e: "Las glándulas ecrinas se distribuyen por todo el cuerpo y su principal función es producir sudor para enfriar el cuerpo." },
+            { q: "El sebo es una sustancia oleosa producida por las glándulas:", o: ["Sudoríparas", "Apocrinas", "Mamarias", "Sebáceas"], a: "Sebáceas", e: "Las glándulas sebáceas secretan sebo para lubricar la piel y el pelo." },
+
+            // FASCIAS
+            { q: "¿Qué tipo de fascia se encuentra en la hipodermis y contiene grasa?", o: ["Fascia Profunda", "Fascia Visceral", "Fascia Superficial", "Fascia Muscular"], a: "Fascia Superficial", e: "La Fascia Superficial está directamente debajo de la dermis, en el tejido subcutáneo, y contiene grasa, nervios y vasos superficiales." },
+            { q: "La envoltura de tejido conectivo denso que rodea los músculos se llama:", o: ["Fascia Superficial", "Fascia Profunda", "Fascia Subserosa", "Epidermis"], a: "Fascia Profunda", e: "La Fascia Profunda es la que no contiene grasa y se organiza para envolver y compartimentar los músculos." },
+
+            // FUNCIONES DE LA PIEL
+            { q: "La síntesis de Vitamina D en la piel se activa por la exposición a:", o: ["El calor", "La luz solar (radiación UV)", "La humedad", "El frío"], a: "La luz solar (radiación UV)", e: "La piel juega un papel crucial en la producción de Vitamina D cuando se expone a la radiación ultravioleta del sol." },
+            { q: "¿Cómo contribuye la piel a la termorregulación cuando hace calor?", o: ["Contrayendo los vasos sanguíneos", "Produciendo más queratina", "Mediante la sudoración y vasodilatación", "Aumentando el grosor de la hipodermis"], a: "Mediante la sudoración y vasodilatación", e: "Para perder calor, la piel aumenta el flujo sanguíneo a la superficie (vasodilatación) y produce sudor, que al evaporarse enfría el cuerpo." },
+            // Additional questions to reach 50+
+            { q: "¿Qué estudia la Anatomía Patológica?", o: ["El desarrollo prenatal", "La estructura normal del cuerpo", "Las alteraciones morfológicas por enfermedades", "Las estructuras bajo el microscopio"], a: "Las alteraciones morfológicas por enfermedades", e: "La Anatomía Patológica se enfoca en cómo las enfermedades alteran la estructura de los tejidos y órganos." },
+            { q: "El eje que atraviesa el cuerpo de adelante hacia atrás es el:", o: ["Longitudinal", "Cefalocaudal", "Transversal", "Anteroposterior"], a: "Anteroposterior", e: "El eje Anteroposterior (o sagital) va desde la parte anterior (ventral) a la posterior (dorsal)." },
+            { q: "El término 'Ventral' es sinónimo de:", o: ["Superior", "Posterior", "Anterior", "Inferior"], a: "Anterior", e: "'Ventral' se refiere a la parte frontal o del vientre del cuerpo, siendo sinónimo de 'Anterior'." },
+            { q: "Las cavidades pleurales, que contienen los pulmones, se encuentran dentro de la:", o: ["Cavidad Dorsal", "Cavidad Torácica", "Cavidad Abdominal", "Cavidad Pélvica"], a: "Cavidad Torácica", e: "La Cavidad Torácica alberga las dos cavidades pleurales (para los pulmones) y el mediastino." },
+            { q: "El nivel de organización que precede al Nivel Celular es el:", o: ["Nivel Tisular", "Nivel de Organismo", "Nivel Químico", "Nivel de Órganos"], a: "Nivel Químico", e: "El Nivel Químico (átomos y moléculas) es el más básico, y sus componentes se unen para formar células." },
+            { q: "El sistema que se encarga de la defensa del cuerpo contra patógenos es el:", o: ["Cardiovascular", "Respiratorio", "Digestivo", "Linfático"], a: "Linfático", e: "El Sistema Linfático es una parte clave del sistema inmunitario, defendiendo al cuerpo de infecciones." },
+            { q: "El estudio de las estructuras que se pueden ver o palpar bajo la piel corresponde a la:", o: ["Anatomía Regional", "Anatomía de Superficie", "Anatomía del Desarrollo", "Anatomía Sistémica"], a: "Anatomía de Superficie", e: "La Anatomía de Superficie relaciona las estructuras internas con los relieves y marcas visibles en la superficie corporal." },
+            { q: "Las células de Merkel en la epidermis están asociadas con la función de:", o: ["Pigmentación", "Defensa inmune", "Producción de queratina", "Sensación táctil"], a: "Sensación táctil", e: "Las células de Merkel son receptores sensoriales que participan en la detección del tacto." },
+            { q: "La dermis reticular, la capa más profunda de la dermis, está compuesta principalmente por tejido:", o: ["Adiposo", "Nervioso", "Conectivo denso irregular", "Epitelial"], a: "Conectivo denso irregular", e: "Esta capa proporciona resistencia y elasticidad a la piel gracias a sus fibras de colágeno y elastina." },
+            { q: "El músculo erector del pelo tiene como función:", o: ["Lubricar el pelo", "Producir queratina", "Hacer que el pelo se erice ('piel de gallina')", "Dar color al pelo"], a: "Hacer que el pelo se erice ('piel de gallina')", e: "Este pequeño músculo liso se contrae en respuesta al frío o al miedo, haciendo que el pelo se levante." },
+            { q: "La Fascia Visceral también se conoce como:", o: ["Fascia Profunda", "Fascia Superficial", "Fascia Subserosa", "Hipodermis"], a: "Fascia Subserosa", e: "Se encuentra entre la fascia muscular interna y las membranas serosas que recubren las cavidades corporales." }
+        ];
+
+        // Shuffle questions
+        questions.sort(() => Math.random() - 0.5);
+
+        let currentQuestionIndex = 0;
+        const userAnswers = new Array(questions.length).fill(null);
+
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const explanationBox = document.getElementById('explanation-box');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const checkBtn = document.getElementById('check-btn');
+        const quizArea = document.getElementById('quiz-area');
+        const resultsContainer = document.getElementById('results-container');
+        
+        const progressBar = document.getElementById('progress-bar');
+        const progressText = document.getElementById('progress-text');
+
+        function renderQuestion() {
+            const questionContent = document.getElementById('question-content');
+            questionContent.classList.add('question-fade-exit');
+
+            setTimeout(() => {
+                const question = questions[currentQuestionIndex];
+                questionText.textContent = question.q;
+                optionsContainer.innerHTML = '';
+                explanationBox.classList.add('hidden');
+                explanationBox.classList.remove('visible');
+
+                // Shuffle options for each question
+                const shuffledOptions = [...question.o].sort(() => Math.random() - 0.5);
+
+                shuffledOptions.forEach(option => {
+                    const label = document.createElement('label');
+                    label.className = 'option-label block p-4 my-2 rounded-lg border-2 border-slate-200 cursor-pointer hover:bg-slate-100';
+                    label.innerHTML = `
+                        <input type="radio" name="option" value="${option}" class="mr-3 accent-indigo-500">
+                        ${option}
+                    `;
+                    optionsContainer.appendChild(label);
+
+                    // Add click listener to update selected style
+                    label.addEventListener('click', () => {
+                        document.querySelectorAll('.option-label').forEach(l => l.classList.remove('selected'));
+                        label.classList.add('selected');
+                        checkBtn.disabled = false;
+                    });
+                });
+
+                updateProgress();
+                updateNavButtons();
+                restoreAnswerState();
+                
+                questionContent.classList.remove('question-fade-exit');
+                questionContent.classList.add('question-fade-enter');
+            }, 200);
+        }
+
+        function updateProgress() {
+            const progressPercentage = ((currentQuestionIndex + 1) / questions.length) * 100;
+            progressBar.style.width = `${progressPercentage}%`;
+            progressText.textContent = `Pregunta ${currentQuestionIndex + 1}/${questions.length}`;
+        }
+
+        function updateNavButtons() {
+            prevBtn.disabled = currentQuestionIndex === 0;
+            nextBtn.disabled = currentQuestionIndex === questions.length - 1 && userAnswers[currentQuestionIndex] === null;
+            
+            checkBtn.classList.remove('hidden');
+            nextBtn.classList.add('hidden');
+            checkBtn.disabled = true; // Disabled until an option is selected
+
+            if (userAnswers[currentQuestionIndex] !== null) {
+                checkBtn.classList.add('hidden');
+                nextBtn.classList.remove('hidden');
+            }
+            
+            if (currentQuestionIndex === questions.length - 1) {
+                nextBtn.textContent = "Ver Resultados";
+            } else {
+                 nextBtn.textContent = "Siguiente";
+            }
+        }
+        
+        function restoreAnswerState() {
+            const answerState = userAnswers[currentQuestionIndex];
+            if (answerState) {
+                const radios = document.querySelectorAll('input[name="option"]');
+                radios.forEach(radio => {
+                    radio.disabled = true;
+                    const parentLabel = radio.parentElement;
+                    if (radio.value === questions[currentQuestionIndex].a) {
+                        parentLabel.classList.add('correct-answer-label');
+                    }
+                    if (radio.value === answerState.selected && !answerState.isCorrect) {
+                        parentLabel.classList.add('incorrect-answer-label');
                     }
                 });
-            }, { threshold: 0.4 });
-            sections.forEach(section => { observer.observe(section); });
-        });
-    </script>
+                showExplanation(answerState.isCorrect);
+            }
+        }
+        
+        function showExplanation(isCorrect) {
+            const question = questions[currentQuestionIndex];
+            explanationBox.classList.remove('hidden');
+            
+            if (isCorrect) {
+                explanationBox.innerHTML = `<strong class="text-green-700">¡Correcto!</strong> ${question.e}`;
+                explanationBox.className = 'explanation p-4 rounded-lg bg-green-50 text-green-800 border-green-400 visible';
+            } else {
+                explanationBox.innerHTML = `<strong class="text-red-700">Incorrecto.</strong> La respuesta correcta es <strong>"${question.a}"</strong>. <br>${question.e}`;
+                explanationBox.className = 'explanation p-4 rounded-lg bg-red-50 text-red-800 border-red-400 visible';
+            }
+        }
 
+        checkBtn.addEventListener('click', () => {
+            const selectedRadio = document.querySelector('input[name="option"]:checked');
+            if (!selectedRadio) return;
+
+            const userAnswer = selectedRadio.value;
+            const question = questions[currentQuestionIndex];
+            const isCorrect = userAnswer === question.a;
+            
+            userAnswers[currentQuestionIndex] = { selected: userAnswer, isCorrect: isCorrect };
+
+            const radios = document.querySelectorAll('input[name="option"]');
+            radios.forEach(radio => {
+                radio.disabled = true;
+                const parentLabel = radio.parentElement;
+                if (radio.value === question.a) {
+                    parentLabel.classList.add('correct-answer-label');
+                }
+                 if (radio.checked && !isCorrect) {
+                    parentLabel.classList.add('incorrect-answer-label');
+                }
+            });
+            
+            showExplanation(isCorrect);
+            checkBtn.classList.add('hidden');
+            nextBtn.classList.remove('hidden');
+        });
+
+        nextBtn.addEventListener('click', () => {
+            if (currentQuestionIndex < questions.length - 1) {
+                currentQuestionIndex++;
+                renderQuestion();
+            } else {
+                showResults();
+            }
+        });
+
+        prevBtn.addEventListener('click', () => {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                renderQuestion();
+            }
+        });
+        
+        function showResults() {
+            const score = userAnswers.filter(answer => answer && answer.isCorrect).length;
+            const total = questions.length;
+            const percentage = Math.round((score / total) * 100);
+
+            quizArea.classList.add('hidden');
+            resultsContainer.classList.remove('hidden');
+
+            document.getElementById('score').textContent = score;
+            document.getElementById('total-questions').textContent = total;
+            const percentageEl = document.getElementById('percentage');
+            const finalMessageEl = document.getElementById('final-message');
+            
+            percentageEl.textContent = `${percentage}%`;
+
+            if (percentage === 100) {
+                finalMessageEl.innerHTML = "¡Felicidades, mi vida! ¡Eres increíblemente inteligente! 💖 Eres una experta total.";
+                percentageEl.className = "text-5xl font-bold my-4 text-green-500";
+            } else if (percentage >= 80) {
+                finalMessageEl.textContent = "¡Wow! ¡Casi perfecto! Estoy muy orgulloso de ti. Eres brillante. ✨";
+                percentageEl.className = "text-5xl font-bold my-4 text-cyan-500";
+            } else if (percentage >= 60) {
+                finalMessageEl.textContent = "¡Muy bien hecho! Sabes muchísimo. ¡Sigue así, vas por un gran camino! 😊";
+                percentageEl.className = "text-5xl font-bold my-4 text-indigo-500";
+            } else {
+                finalMessageEl.textContent = "¡Buen intento! Lo importante es aprender juntos. ¡Eres genial por esforzarte! 💪";
+                percentageEl.className = "text-5xl font-bold my-4 text-amber-500";
+            }
+        }
+
+        // Initial load
+        renderQuestion();
+    </script>
 </body>
 </html>
+
