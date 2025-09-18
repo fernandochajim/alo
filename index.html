@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Examen Interactivo de Morfología</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -11,12 +11,19 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f8fafc; /* slate-50 */
+            background-color: #f1f5f9; /* slate-100 */
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
-        .quiz-container {
-            min-height: 450px;
+        .card-container {
+            min-height: 500px;
             display: flex;
             flex-direction: column;
+            transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+        }
+        .card-container.exiting {
+            opacity: 0;
+            transform: scale(0.98);
         }
         .option-label {
             transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
@@ -50,14 +57,12 @@
         .progress-bar-fill {
             transition: width 0.4s ease-in-out;
         }
-        /* Fade transition for question change */
-        .question-fade-exit {
-            opacity: 0;
-            transition: opacity 0.2s ease-in;
+        .view-transition {
+            animation: fadeIn 0.4s ease-in-out;
         }
-        .question-fade-enter {
-            opacity: 1;
-            transition: opacity 0.2s ease-out;
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
@@ -66,326 +71,309 @@
     <div class="container mx-auto max-w-lg p-4 min-h-screen flex flex-col justify-center">
 
         <!-- Header -->
-        <header class="text-center mb-6">
-            <h1 class="text-3xl sm:text-4xl font-bold text-indigo-600">Examen de Morfología 🩺</h1>
-
+        <header id="main-header" class="text-center mb-4">
+            <h1 class="text-3xl font-bold text-slate-800">Examen de Morfología</h1>
+            <p class="mt-1 text-slate-500">Formato de Estudio Interactivo</p>
         </header>
 
         <!-- Quiz Area -->
-        <div id="quiz-area" class="bg-white p-6 sm:p-8 rounded-2xl shadow-xl w-full">
+        <div id="quiz-area" class="bg-white p-6 sm:p-8 rounded-2xl shadow-lg w-full">
             
             <!-- Progress Bar -->
-            <div id="progress-container" class="mb-4">
-                <div class="flex justify-between items-center mb-1 text-sm text-slate-500">
-                    <span>Progreso</span>
-                    <span id="progress-text">Pregunta 1/50</span>
+            <div id="progress-container" class="mb-6">
+                <div class="flex justify-between items-center mb-1 text-xs text-slate-500 font-medium">
+                    <span>PROGRESO</span>
+                    <span id="progress-text"></span>
                 </div>
-                <div class="w-full bg-slate-200 rounded-full h-2.5">
-                    <div id="progress-bar" class="bg-indigo-500 h-2.5 rounded-full progress-bar-fill" style="width: 2%"></div>
+                <div class="w-full bg-slate-200 rounded-full h-2">
+                    <div id="progress-bar" class="bg-indigo-500 h-2 rounded-full progress-bar-fill"></div>
                 </div>
             </div>
 
-            <div class="quiz-container">
-                <!-- Question Content -->
-                <div id="question-content" class="flex-grow">
-                    <p id="question-text" class="text-lg font-semibold mb-4 min-h-[60px]"></p>
-                    <div id="options-container" class="space-y-3"></div>
+            <div id="card-container" class="card-container">
+                <!-- Study View -->
+                <div id="study-view" class="flex-grow flex flex-col justify-center text-center view-transition">
+                    <span id="study-topic" class="text-sm font-semibold text-indigo-500 uppercase tracking-wider"></span>
+                    <p id="study-info" class="text-xl sm:text-2xl font-semibold my-4"></p>
+                    <button id="start-question-btn" class="w-full mt-auto bg-indigo-500 text-white font-semibold py-3 px-6 rounded-xl hover:bg-indigo-600 transition-all shadow-sm">Entendido, ¡vamos a la pregunta!</button>
                 </div>
-    
-                <!-- Explanation Area -->
-                <div id="explanation-box" class="explanation p-4 rounded-lg bg-slate-50 text-slate-700 hidden"></div>
-    
-                <!-- Navigation -->
-                <div class="flex justify-between items-center mt-6 pt-4 border-t border-slate-200">
-                    <button id="prev-btn" class="py-2 px-5 bg-slate-200 text-slate-700 font-semibold rounded-full hover:bg-slate-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">Anterior</button>
-                    <button id="check-btn" class="py-2 px-5 bg-indigo-500 text-white font-semibold rounded-full hover:bg-indigo-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">Revisar</button>
-                    <button id="next-btn" class="py-2 px-5 bg-indigo-500 text-white font-semibold rounded-full hover:bg-indigo-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed hidden">Siguiente</button>
+                
+                <!-- Quiz View -->
+                <div id="quiz-view" class="hidden flex-grow flex flex-col view-transition">
+                    <p id="question-text" class="text-lg font-semibold mb-4"></p>
+                    <div id="options-container" class="space-y-3"></div>
+                    <div id="explanation-box" class="explanation p-4 rounded-lg bg-slate-50 text-slate-700 hidden"></div>
+                    <button id="next-btn" class="w-full mt-auto bg-slate-700 text-white font-semibold py-3 px-6 rounded-xl hover:bg-slate-800 transition-all shadow-sm hidden">Siguiente Tema</button>
                 </div>
             </div>
         </div>
         
         <!-- Results Section (Initially Hidden) -->
-        <div id="results-container" class="hidden text-center bg-white p-8 rounded-2xl shadow-xl">
-             <h2 class="text-3xl font-bold text-indigo-600 mb-4">¡Resultados Finales!</h2>
+        <div id="results-container" class="hidden text-center bg-white p-8 rounded-2xl shadow-lg">
+             <h2 class="text-3xl font-bold text-slate-800 mb-4">Resultados Finales</h2>
             <div class="text-center text-lg">
                 <p>Respuestas Correctas: <span id="score" class="font-bold text-green-600">0</span> de <span id="total-questions" class="font-bold">0</span></p>
                 <p class="text-5xl font-bold my-4" id="percentage">0%</p>
                 <p class="mt-4 text-slate-600 text-base" id="final-message"></p>
+                <button id="restart-btn" class="w-full mt-6 bg-indigo-500 text-white font-semibold py-3 px-6 rounded-xl hover:bg-indigo-600 transition-all">Volver a Intentar</button>
             </div>
         </div>
-
     </div>
 
     <script>
-        const questions = [
-            // RAMAS DE LA MORFOLOGÍA
-            { q: "¿Qué rama de la morfología estudia el desarrollo prenatal?", o: ["Histología", "Embriología", "Anatomía Patológica", "Citología"], a: "Embriología", e: "La Embriología se especializa en el estudio de todo el desarrollo antes del nacimiento." },
-            { q: "¿Cuál es el objeto de estudio de la Histología?", o: ["Las células", "Los órganos", "Los tejidos a nivel microscópico", "Las enfermedades"], a: "Los tejidos a nivel microscópico", e: "La Histología es el estudio microscópico de la estructura y función de los tejidos." },
-            { q: "La ciencia que estudia la estructura del cuerpo humano es la:", o: ["Fisiología", "Anatomía", "Embriología", "Patología"], a: "Anatomía", e: "La Anatomía es la ciencia fundamental que estudia la forma y estructura del cuerpo." },
-            
-            // PLANIMETRÍA Y EJES
-            { q: "Un plano que divide el cuerpo en una parte anterior y otra posterior se llama:", o: ["Plano Sagital", "Plano Transversal", "Plano Coronal o Frontal", "Plano Oblicuo"], a: "Plano Coronal o Frontal", e: "El plano Coronal o Frontal realiza un corte vertical que separa el cuerpo en anterior (ventral) y posterior (dorsal)." },
-            { q: "El plano Sagital divide el cuerpo en:", o: ["Parte superior e inferior", "Parte anterior y posterior", "Parte derecha e izquierda", "Partes desiguales"], a: "Parte derecha e izquierda", e: "El plano Sagital es un corte vertical que divide el cuerpo en una mitad derecha y otra izquierda." },
-            { q: "¿Qué plano usarías para dividir el cuerpo en una sección craneal y otra caudal?", o: ["Plano Sagital", "Plano Transversal", "Plano Frontal", "Eje Longitudinal"], a: "Plano Transversal", e: "El plano Transversal realiza un corte horizontal, separando el cuerpo en una parte superior (craneal) y otra inferior (caudal)." },
-            { q: "El eje Cefalocaudal también es conocido como:", o: ["Anteroposterior", "Transversal", "Longitudinal", "Horizontal"], a: "Longitudinal", e: "El eje Cefalocaudal o Longitudinal recorre el cuerpo de arriba hacia abajo." },
-            
-            // TÉRMINOS DE POSICIÓN
-            { q: "El término 'Proximal' describe una estructura que está:", o: ["Más cerca de la línea media", "Más alejada del tronco", "Más cerca del tronco o punto de origen", "En la superficie del cuerpo"], a: "Más cerca del tronco o punto de origen", e: "'Proximal' indica cercanía al punto de origen de una extremidad o al tronco." },
-            { q: "¿Cuál es el término opuesto a 'Superior' o 'Craneal'?", o: ["Ventral", "Dorsal", "Lateral", "Inferior o Caudal"], a: "Inferior o Caudal", e: "'Inferior' o 'caudal' se refiere a una estructura que está más abajo o más cerca de los pies." },
-            { q: "Si una estructura está más cerca de la línea media del cuerpo, se dice que es:", o: ["Lateral", "Distal", "Medial", "Proximal"], a: "Medial", e: "'Medial' se refiere a lo que está más cerca del plano sagital medio del cuerpo." },
-            
+        const studyData = [
+            // MORFOLOGÍA
+            { topic: "Embriología", info: "Es la rama de la morfología que estudia el <strong>desarrollo prenatal</strong>, desde la fecundación hasta el nacimiento.", q: "Qué rama de la morfología se enfoca en el <strong>desarrollo prenatal</strong>?", o: ["Histología", "Embriología", "Anatomía Patológica", "Citología"], a: "Embriología" },
+            { topic: "Histología", info: "Es el <strong>estudio microscópico</strong> de la estructura y función de los <strong>tejidos</strong> corporales.", q: "Cuál es el objeto de estudio de la <strong>Histología</strong>?", o: ["Las células", "Los órganos", "Los tejidos a nivel microscópico", "Las enfermedades"], a: "Los tejidos a nivel microscópico" },
+            { topic: "Anatomía Patológica", info: "Estudia las <strong>alteraciones morfológicas</strong> (de forma y estructura) en órganos y tejidos que son <strong>causadas por enfermedades</strong>.", q: "Qué estudia la <strong>Anatomía Patológica</strong>?", o: ["El desarrollo normal", "La estructura del cuerpo sano", "Las alteraciones por enfermedades", "Las estructuras bajo el microscopio"], a: "Las alteraciones por enfermedades" },
+            // PLANIMETRÍA
+            { topic: "Plano Sagital", info: "Es un plano vertical que divide el cuerpo en una parte <strong>derecha</strong> y otra <strong>izquierda</strong>.", q: "El <strong>plano Sagital</strong> divide el cuerpo en:", o: ["Parte superior e inferior", "Parte anterior y posterior", "Parte derecha e izquierda", "Partes desiguales"], a: "Parte derecha e izquierda" },
+            { topic: "Plano Coronal o Frontal", info: "Es un plano vertical que divide el cuerpo en una parte <strong>anterior (ventral)</strong> y otra <strong>posterior (dorsal)</strong>.", q: "Un plano que divide el cuerpo en <strong>anterior</strong> y <strong>posterior</strong> se llama:", o: ["Plano Sagital", "Plano Transversal", "Plano Coronal o Frontal", "Plano Oblicuo"], a: "Plano Coronal o Frontal" },
+            { topic: "Plano Transversal", info: "Es un plano horizontal que divide el cuerpo en una parte <strong>superior</strong> y otra <strong>inferior</strong>.", q: "Qué plano usarías para dividir el cuerpo en una sección <strong>superior</strong> y otra <strong>inferior</strong>?", o: ["Plano Sagital", "Plano Transversal", "Plano Frontal", "Eje Longitudinal"], a: "Plano Transversal" },
+            // EJES
+            { topic: "Eje Anteroposterior", info: "Es un eje imaginario que atraviesa el cuerpo de <strong>adelante hacia atrás</strong> (de ventral a dorsal).", q: "El eje que atraviesa el cuerpo de <strong>adelante hacia atrás</strong> es el:", o: ["Longitudinal", "Cefalocaudal", "Transversal", "Anteroposterior"], a: "Anteroposterior" },
+            { topic: "Eje Cefalocaudal", info: "También llamado <strong>Longitudinal</strong>, es un eje que recorre el cuerpo desde la <strong>cabeza hasta los pies</strong> (de superior a inferior).", q: "El eje <strong>Cefalocaudal</strong> también se conoce como:", o: ["Anteroposterior", "Transversal", "Longitudinal", "Horizontal"], a: "Longitudinal" },
+            // TÉRMINOS
+            { topic: "Término: Superior / Craneal", info: "Indica una estructura que está <strong>más alta</strong> o <strong>más cerca de la cabeza</strong>.", q: "El término <strong>'Craneal'</strong> se usa como sinónimo de:", o: ["Inferior", "Anterior", "Superior", "Posterior"], a: "Superior" },
+            { topic: "Término: Inferior / Caudal", info: "Indica una estructura que está <strong>más baja</strong> o <strong>más cerca de los pies</strong>.", q: "Cuál es el término opuesto a <strong>'Superior'</strong>?", o: ["Ventral", "Dorsal", "Lateral", "Inferior o Caudal"], a: "Inferior o Caudal" },
+            { topic: "Término: Medial", info: "Indica que una estructura está <strong>más cerca de la línea media</strong> del cuerpo (del plano sagital medio).", q: "Si una estructura está <strong>más cerca de la línea media</strong> del cuerpo, se dice que es:", o: ["Lateral", "Distal", "Medial", "Proximal"], a: "Medial" },
+            { topic: "Término: Lateral", info: "Indica que una estructura está <strong>más alejada de la línea media</strong> del cuerpo.", q: "El término opuesto a <strong>'Medial'</strong> es:", o: ["Proximal", "Distal", "Anterior", "Lateral"], a: "Lateral" },
+            { topic: "Término: Proximal", info: "Describe una estructura que está <strong>más cerca del tronco</strong> o del punto de origen de una extremidad.", q: "El término <strong>'Proximal'</strong> describe una estructura que está:", o: ["Más cerca de la línea media", "Más alejada del tronco", "Más cerca del tronco o punto de origen", "En la superficie del cuerpo"], a: "Más cerca del tronco o punto de origen" },
+            { topic: "Término: Distal", info: "Describe una estructura que está <strong>más alejada del tronco</strong> o del punto de origen de una extremidad.", q: "El codo es <strong>proximal</strong> al hombro, mientras que la muñeca es <strong>____</strong> al codo.", o: ["Medial", "Lateral", "Proximal", "Distal"], a: "Distal" },
             // POSICIÓN ANATÓMICA
-            { q: "¿Cómo deben estar las palmas de las manos en la posición anatómica?", o: ["Mirando hacia atrás", "Mirando hacia los lados", "Mirando hacia adelante", "Apoyadas en los muslos"], a: "Mirando hacia adelante", e: "En la posición anatómica de referencia, las palmas de las manos se dirigen hacia el frente (posición de supinación)." },
-
-            // CAVIDADES CORPORALES
-            { q: "¿En qué cavidad se encuentra el corazón?", o: ["Cavidad Pleural", "Cavidad Pericárdica", "Canal Vertebral", "Cavidad Abdominal"], a: "Cavidad Pericárdica", e: "El corazón está alojado en la cavidad Pericárdica, que se encuentra en el mediastino dentro de la cavidad torácica." },
-            { q: "La cavidad craneal y el canal vertebral juntos forman la:", o: ["Cavidad Ventral", "Cavidad Abdominopélvica", "Cavidad Torácica", "Cavidad Dorsal"], a: "Cavidad Dorsal", e: "La Cavidad Dorsal protege el sistema nervioso central y se divide en la cavidad craneal y el canal vertebral." },
-            { q: "El Mediastino es una subdivisión de la cavidad:", o: ["Craneal", "Pélvica", "Torácica", "Abdominal"], a: "Torácica", e: "El mediastino es el espacio central de la cavidad torácica, entre las cavidades pleurales, que contiene al corazón, grandes vasos, etc." },
-            
+            { topic: "Posición Anatómica", info: "Es la postura de referencia: cuerpo <strong>erecto</strong>, cabeza y ojos <strong>al frente</strong>, miembros superiores a los lados con las <strong>palmas hacia adelante</strong>.", q: "Cómo deben estar las <strong>palmas de las manos</strong> en la posición anatómica?", o: ["Mirando hacia atrás", "Mirando hacia los lados", "Mirando hacia adelante", "Apoyadas en los muslos"], a: "Mirando hacia adelante" },
+            // CAVIDADES
+            { topic: "Cavidad Dorsal", info: "Es la cavidad posterior que protege el sistema nervioso central. Se subdivide en la <strong>cavidad craneal</strong> (cerebro) y el <strong>canal vertebral</strong> (médula espinal).", q: "La <strong>cavidad craneal</strong> y el <strong>canal vertebral</strong> juntos forman la:", o: ["Cavidad Ventral", "Cavidad Abdominopélvica", "Cavidad Torácica", "Cavidad Dorsal"], a: "Cavidad Dorsal" },
+            { topic: "Cavidad Torácica", info: "Es la parte superior de la cavidad ventral. Contiene las <strong>cavidades pleurales</strong> (pulmones) y el <strong>mediastino</strong> (donde está el corazón).", q: "Las <strong>cavidades pleurales</strong> se encuentran dentro de la:", o: ["Cavidad Dorsal", "Cavidad Torácica", "Cavidad Abdominal", "Cavidad Pélvica"], a: "Cavidad Torácica" },
+            { topic: "Cavidad Pericárdica", info: "Es una cavidad dentro del <strong>mediastino</strong> que contiene específicamente al <strong>corazón</strong>.", q: "En qué cavidad se encuentra el <strong>corazón</strong>?", o: ["Cavidad Pleural", "Cavidad Pericárdica", "Canal Vertebral", "Cavidad Abdominal"], a: "Cavidad Pericárdica" },
+            { topic: "Cavidad Abdominopélvica", info: "Se extiende desde el diafragma hasta la ingle y se divide en <strong>cavidad abdominal</strong> y <strong>cavidad pélvica</strong>.", q: "La cavidad que contiene tanto el estómago como la vejiga es la:", o: ["Cavidad Torácica", "Cavidad Dorsal", "Cavidad Abdominopélvica", "Cavidad Craneal"], a: "Cavidad Abdominopélvica" },
             // DIVISIÓN CORPORAL
-            { q: "El tórax, el abdomen y la pelvis son subdivisiones del:", o: ["Miembro Superior", "Tronco", "Miembro Inferior", "Cuello"], a: "Tronco", e: "El tronco es la parte central del cuerpo que se divide en tórax, abdomen y pelvis." },
-            { q: "El antebrazo se encuentra entre:", o: ["El hombro y el brazo", "El brazo y la mano", "La muñeca y los dedos", "La cadera y el muslo"], a: "El brazo y la mano", e: "El miembro superior se divide en brazo (hombro a codo), antebrazo (codo a muñeca) y mano." },
-            
+            { topic: "División: Tronco", info: "Es la parte central del cuerpo, y se subdivide en <strong>tórax</strong>, <strong>abdomen</strong> y <strong>pelvis</strong>.", q: "El tórax, el abdomen y la pelvis son subdivisiones del:", o: ["Miembro Superior", "Tronco", "Miembro Inferior", "Cuello"], a: "Tronco" },
+            { topic: "División: Miembro Superior", info: "Está compuesto por el <strong>brazo</strong> (hombro a codo), <strong>antebrazo</strong> (codo a muñeca) y <strong>mano</strong>.", q: "El <strong>antebrazo</strong> se encuentra entre:", o: ["El hombro y el brazo", "El brazo y la mano", "La muñeca y los dedos", "La cadera y el muslo"], a: "El brazo y la mano" },
             // NIVELES DE ORGANIZACIÓN
-            { q: "En la jerarquía de organización, ¿qué nivel se encuentra entre el nivel celular y el nivel de órganos?", o: ["Nivel Químico", "Nivel Tisular", "Nivel de Sistemas", "Nivel de Organismo"], a: "Nivel Tisular", e: "Las células se agrupan para formar tejidos (nivel tisular), y los tejidos se agrupan para formar órganos." },
-            { q: "El nivel más complejo de organización biológica es el:", o: ["Nivel Celular", "Nivel de Órganos", "Nivel de Aparatos y Sistemas", "Nivel de Organismo"], a: "Nivel de Organismo", e: "El organismo representa el conjunto de todos los sistemas funcionando de manera coordinada, constituyendo el nivel más alto de organización." },
-
+            { topic: "Nivel Químico", info: "Es el nivel más básico, compuesto por <strong>átomos y moléculas</strong> que son los componentes fundamentales de la materia viva.", q: "El nivel de organización que precede al Nivel Celular es el:", o: ["Nivel Tisular", "Nivel de Organismo", "Nivel Químico", "Nivel de Órganos"], a: "Nivel Químico" },
+            { topic: "Nivel Tisular", info: "Es el nivel donde las células similares se agrupan para formar <strong>tejidos</strong>. Se encuentra entre el nivel celular y el de órganos.", q: "Qué nivel de organización se encuentra entre el nivel <strong>celular</strong> y el de <strong>órganos</strong>?", o: ["Nivel Químico", "Nivel Tisular", "Nivel de Sistemas", "Nivel de Organismo"], a: "Nivel Tisular" },
+            { topic: "Nivel de Organismo", info: "Es el nivel más complejo, donde todos los <strong>aparatos y sistemas</strong> funcionan en conjunto para constituir un ser vivo completo.", q: "El nivel más complejo de organización biológica es el:", o: ["Nivel Celular", "Nivel de Órganos", "Nivel de Aparatos y Sistemas", "Nivel de Organismo"], a: "Nivel de Organismo" },
             // SISTEMAS CORPORALES
-            { q: "¿Qué sistema es responsable de la producción de hormonas?", o: ["Sistema Nervioso", "Sistema Endocrino", "Sistema Linfático", "Sistema Urinario"], a: "Sistema Endocrino", e: "El sistema Endocrino regula procesos corporales a través de la producción y secreción de hormonas." },
-            { q: "La piel y sus anexos (pelo, uñas) forman el sistema:", o: ["Esquelético", "Muscular", "Tegumentario", "Cardiovascular"], a: "Tegumentario", e: "El sistema Tegumentario es el sistema de cobertura del cuerpo, compuesto por la piel y sus faneras." },
-            
+            { topic: "Sistema Tegumentario", info: "Está formado por la <strong>piel</strong> y sus estructuras anexas (<strong>faneras</strong>) como el pelo y las uñas. Es la cubierta protectora del cuerpo.", q: "La <strong>piel</strong> y sus <strong>anexos</strong> (pelo, uñas) forman el sistema:", o: ["Esquelético", "Muscular", "Tegumentario", "Cardiovascular"], a: "Tegumentario" },
+            { topic: "Sistema Endocrino", info: "Es el sistema de glándulas que producen <strong>hormonas</strong> para regular procesos corporales como el metabolismo y el crecimiento.", q: "Qué sistema es responsable de la producción de <strong>hormonas</strong>?", o: ["Sistema Nervioso", "Sistema Endocrino", "Sistema Linfático", "Sistema Urinario"], a: "Sistema Endocrino" },
+            { topic: "Sistema Linfático", info: "Es una parte clave del sistema inmunitario. <strong>Defiende</strong> al cuerpo contra patógenos y transporta la <strong>linfa</strong>.", q: "El sistema que se encarga de la <strong>defensa</strong> del cuerpo contra patógenos es el:", o: ["Cardiovascular", "Respiratorio", "Digestivo", "Linfático"], a: "Linfático" },
             // RAMAS DE LA ANATOMÍA
-            { q: "La anatomía que estudia el cuerpo mediante técnicas de imagen como Rayos X o TC es la:", o: ["Anatomía Clínica", "Anatomía de Superficie", "Anatomía Radiológica", "Anatomía Microscópica"], a: "Anatomía Radiológica", e: "Esta rama se especializa en el estudio del cuerpo vivo a través de imágenes diagnósticas." },
-            { q: "Si se compara la anatomía de un humano con la de un primate, se está aplicando la:", o: ["Anatomía del Desarrollo", "Anatomía Patológica", "Anatomía Regional", "Anatomía Comparada"], a: "Anatomía Comparada", e: "La Anatomía Comparada estudia y compara las estructuras de diferentes especies para entender sus similitudes y diferencias evolutivas." },
-            { q: "¿Qué incluye la Anatomía Microscópica?", o: ["Citología e Histología", "Embriología y Radiología", "Sistémica y Regional", "Clínica y Aplicada"], a: "Citología e Histología", e: "Requiere el uso de un microscopio e incluye el estudio de las células (Citología) y los tejidos (Histología)." },
-            
+            { topic: "Anatomía Sistémica", info: "También llamada <strong>Descriptiva</strong>, estudia el cuerpo humano subdividiéndolo en <strong>sistemas y aparatos</strong>.", q: "El estudio del cuerpo por <strong>sistemas</strong> corresponde a la anatomía:", o: ["Regional", "De Superficie", "Sistémica", "Comparada"], a: "Sistémica" },
+            { topic: "Anatomía Regional", info: "También llamada <strong>Topográfica</strong>, estudia el cuerpo por <strong>regiones</strong> (cabeza, cuello, tórax) y las relaciones entre sus estructuras.", q: "Si se estudia la cabeza y todas las estructuras que contiene, se aplica la anatomía:", o: ["Sistémica", "Regional", "Clínica", "Del Desarrollo"], a: "Regional" },
+            { topic: "Anatomía de Superficie", info: "Es el estudio de las estructuras internas en relación con los relieves que se pueden <strong>ver o palpar en la piel</strong>.", q: "El estudio de las estructuras que se pueden <strong>palpar bajo la piel</strong> corresponde a la:", o: ["Anatomía Regional", "Anatomía de Superficie", "Anatomía del Desarrollo", "Anatomía Sistémica"], a: "Anatomía de Superficie" },
+            { topic: "Anatomía Microscópica", info: "Requiere el uso de un <strong>microscopio</strong>. Incluye la <strong>Citología</strong> (estudio de células) y la <strong>Histología</strong> (estudio de tejidos).", q: "Qué incluye la <strong>Anatomía Microscópica</strong>?", o: ["Citología e Histología", "Embriología y Radiología", "Sistémica y Regional", "Clínica y Aplicada"], a: "Citología e Histología" },
+            { topic: "Anatomía Radiológica", info: "Es la rama que estudia la estructura del cuerpo mediante el uso de <strong>técnicas de imagen</strong> como Rayos X, TC, RM, etc.", q: "La anatomía que estudia el cuerpo mediante <strong>técnicas de imagen</strong> es la:", o: ["Anatomía Clínica", "Anatomía de Superficie", "Anatomía Radiológica", "Anatomía Microscópica"], a: "Anatomía Radiológica" },
             // IMAGENOLOGÍA
-            { q: "¿Qué técnica de imagen utiliza un campo magnético potente y ondas de radio?", o: ["Tomografía Computarizada (TC)", "Ultrasonografía", "Resonancia Magnética (RM)", "Radiología Convencional"], a: "Resonancia Magnética (RM)", e: "La RM es ideal para ver tejidos blandos y no utiliza radiación ionizante, basándose en campos magnéticos y ondas de radio." },
-            { q: "En una radiografía, una estructura que se ve oscura (negra) se denomina:", o: ["Radiopaca", "Radiolúcida", "Ecorefringente", "Hipointensa"], a: "Radiolúcida", e: "Las estructuras menos densas, como el aire en los pulmones, permiten el paso de los Rayos X y se ven oscuras o radiolúcidas." },
-            { q: "¿Cuál de estas técnicas de imagen NO utiliza radiación ionizante?", o: ["Radiología Convencional", "Tomografía Computarizada (TC)", "Medicina Nuclear", "Ultrasonografía (Ecografía)"], a: "Ultrasonografía (Ecografía)", e: "La ecografía utiliza ondas de sonido de alta frecuencia, por lo que es segura y no implica exposición a radiación ionizante." },
-            { q: "La Tomografía por Emisión de Positrones (PET) es única porque muestra:", o: ["La densidad de los huesos", "La estructura de los órganos", "La actividad metabólica de las células", "El flujo sanguíneo en tiempo real"], a: "La actividad metabólica de las células", e: "El PET es una técnica de medicina nuclear que evalúa la función de los tejidos midiendo su actividad metabólica." },
-            
-            // PIEL Y FANERAS
-            { q: "¿Cuál es la capa más profunda de la piel?", o: ["Epidermis", "Dermis", "Hipodermis", "Fascia Profunda"], a: "Hipodermis", e: "La Hipodermis (o tejido subcutáneo) es la capa más profunda, compuesta principalmente por tejido adiposo." },
-            { q: "Los queratinocitos, melanocitos y células de Langerhans se encuentran en la:", o: ["Dermis", "Hipodermis", "Epidermis", "Fascia Superficial"], a: "Epidermis", e: "Estas células son componentes clave de la Epidermis, la capa más externa de la piel." },
-            { q: "El estrato más superficial de la epidermis, compuesto por células muertas, es el:", o: ["Estrato Basal", "Estrato Espinoso", "Estrato Córneo", "Estrato Granuloso"], a: "Estrato Córneo", e: "El estrato córneo es la capa más externa y protectora de la epidermis." },
-            { q: "La dermis se divide en dos capas:", o: ["Papilar y Reticular", "Basal y Espinoso", "Superficial y Profunda", "Externa e Interna"], a: "Papilar y Reticular", e: "La dermis tiene una capa superficial (Papilar) y una más profunda y gruesa (Reticular)." },
-            { q: "Los vasos sanguíneos, nervios y folículos pilosos se alojan principalmente en la:", o: ["Epidermis", "Dermis", "Hipodermis", "Estrato Córneo"], a: "Dermis", e: "La Dermis es la capa que contiene la mayoría de las estructuras de soporte y anexos de la piel." },
-            { q: "El pelo y las uñas son conocidos como:", o: ["Glándulas", "Faneras", "Fascias", "Tejidos"], a: "Faneras", e: "Las faneras o anexos cutáneos son estructuras derivadas de la piel, como pelos, uñas y glándulas." },
-            { q: "Las glándulas sudoríparas que ayudan a la termorregulación son principalmente las:", o: ["Apocrinas", "Ecrinas", "Sebáceas", "Mamarias"], a: "Ecrinas", e: "Las glándulas ecrinas se distribuyen por todo el cuerpo y su principal función es producir sudor para enfriar el cuerpo." },
-            { q: "El sebo es una sustancia oleosa producida por las glándulas:", o: ["Sudoríparas", "Apocrinas", "Mamarias", "Sebáceas"], a: "Sebáceas", e: "Las glándulas sebáceas secretan sebo para lubricar la piel y el pelo." },
-
+            { topic: "Radiología Convencional", info: "Usa <strong>Rayos X</strong>. Las estructuras densas como los huesos se ven blancas (<strong>radiopacas</strong>) y las menos densas como los pulmones, oscuras (<strong>radiolúcidas</strong>).", q: "En una radiografía, un hueso se ve blanco porque es una estructura:", o: ["Radiolúcida", "Hipointensa", "Radiopaca", "Ecorefringente"], a: "Radiopaca" },
+            { topic: "Ultrasonografía (Ecografía)", info: "Usa <strong>ondas de sonido</strong> de alta frecuencia para crear imágenes en tiempo real. <strong>No utiliza radiación ionizante</strong>.", q: "Cuál de estas técnicas de imagen <strong>NO utiliza radiación ionizante</strong>?", o: ["Radiología Convencional", "Tomografía Computarizada (TC)", "Medicina Nuclear", "Ultrasonografía (Ecografía)"], a: "Ultrasonografía (Ecografía)" },
+            { topic: "Tomografía Computarizada (TC)", info: "Combina una serie de <strong>radiografías</strong> desde diferentes ángulos para crear <strong>imágenes transversales</strong> (cortes) del cuerpo.", q: "La técnica que crea <strong>'cortes'</strong> transversales del cuerpo usando Rayos X es la:", o: ["Resonancia Magnética (RM)", "Ecografía", "Tomografía Computarizada (TC)", "Gammagrafía"], a: "Tomografía Computarizada (TC)" },
+            { topic: "Resonancia Magnética (RM)", info: "Usa un <strong>campo magnético</strong> potente y <strong>ondas de radio</strong> para generar imágenes detalladas, especialmente de <strong>tejidos blandos</strong>. No usa radiación ionizante.", q: "Qué técnica de imagen utiliza un <strong>campo magnético</strong> y es ideal para tejidos blandos?", o: ["Tomografía Computarizada (TC)", "Ultrasonografía", "Resonancia Magnética (RM)", "Radiología Convencional"], a: "Resonancia Magnética (RM)" },
+            { topic: "Tomografía por Emisión de Positrones (PET)", info: "Es una técnica de medicina nuclear que muestra la <strong>actividad metabólica</strong> de las células, usando un <strong>radiotrazador</strong>.", q: "La <strong>Tomografía por Emisión de Positrones (PET)</strong> es única porque muestra:", o: ["La densidad de los huesos", "La estructura de los órganos", "La actividad metabólica de las células", "El flujo sanguíneo en tiempo real"], a: "La actividad metabólica de las células" },
+            // PIEL
+            { topic: "Capas de la Piel", info: "La piel está compuesta por tres capas principales: <strong>Epidermis</strong> (la más externa), <strong>Dermis</strong> (intermedia) e <strong>Hipodermis</strong> (la más profunda).", q: "Cuál es la capa <strong>intermedia</strong> de la piel?", o: ["Epidermis", "Hipodermis", "Fascia Profunda", "Dermis"], a: "Dermis" },
+            { topic: "Epidermis: Estratos", info: "La epidermis, de superficial a profundo, contiene los estratos: <strong>Córneo, Lúcido, Granuloso, Espinoso y Basal</strong>.", q: "El estrato más <strong>superficial</strong> de la epidermis, compuesto por células muertas, es el:", o: ["Estrato Basal", "Estrato Espinoso", "Estrato Córneo", "Estrato Granuloso"], a: "Estrato Córneo" },
+            { topic: "Epidermis: Células", info: "La epidermis contiene <strong>queratinocitos</strong> (los más abundantes), <strong>melanocitos</strong> (pigmento), <strong>células de Langerhans</strong> (inmunes) y <strong>células de Merkel</strong> (sensoriales).", q: "Los <strong>queratinocitos</strong>, <strong>melanocitos</strong> y <strong>células de Langerhans</strong> se encuentran en la:", o: ["Dermis", "Hipodermis", "Epidermis", "Fascia Superficial"], a: "Epidermis" },
+            { topic: "Dermis", info: "La capa intermedia. Contiene <strong>vasos sanguíneos, nervios, folículos pilosos y glándulas</strong>. Se divide en Dermis <strong>Papilar</strong> (superficial) y <strong>Reticular</strong> (profunda).", q: "Los <strong>vasos sanguíneos</strong> y <strong>folículos pilosos</strong> se alojan principalmente en la:", o: ["Epidermis", "Dermis", "Hipodermis", "Estrato Córneo"], a: "Dermis" },
+            { topic: "Hipodermis", info: "También llamado <strong>tejido subcutáneo</strong>, es la capa más profunda, compuesta principalmente por <strong>tejido adiposo</strong> (grasa).", q: "Cuál es la capa de la piel compuesta principalmente por <strong>tejido adiposo</strong>?", o: ["Epidermis", "Dermis", "Hipodermis", "Fascia Profunda"], a: "Hipodermis" },
+            // FANERAS
+            { topic: "Faneras: Pelos", info: "Son estructuras de queratina. Se asocian al <strong>músculo erector del pelo</strong> (causa la 'piel de gallina') y a las <strong>glándulas sebáceas</strong>.", q: "El músculo que causa la 'piel de gallina' se llama:", o: ["Músculo liso", "Músculo erector del pelo", "Músculo cutáneo", "Músculo folicular"], a: "Músculo erector del pelo" },
+            { topic: "Faneras: Uñas", info: "Son <strong>placas de queratina</strong> dura que protegen los extremos de los dedos de manos y pies.", q: "Las uñas son placas compuestas principalmente de:", o: ["Colágeno", "Melanina", "Tejido adiposo", "Queratina"], a: "Queratina" },
+            { topic: "Glándulas Sudoríparas", info: "Producen <strong>sudor</strong> para la termorregulación. Se dividen en <strong>Ecrinas</strong> (en todo el cuerpo) y <strong>Apocrinas</strong> (axilas, ingle).", q: "Las glándulas que producen <strong>sudor</strong> para regular la temperatura son las:", o: ["Sebáceas", "Sudoríparas", "Mamarias", "Salivales"], a: "Sudoríparas" },
+            { topic: "Glándulas Sebáceas", info: "Producen una sustancia oleosa llamada <strong>sebo</strong>, cuya función es <strong>lubricar</strong> la piel y el pelo.", q: "El <strong>sebo</strong> es una sustancia oleosa producida por las glándulas:", o: ["Sudoríparas", "Apocrinas", "Mamarias", "Sebáceas"], a: "Sebáceas" },
             // FASCIAS
-            { q: "¿Qué tipo de fascia se encuentra en la hipodermis y contiene grasa?", o: ["Fascia Profunda", "Fascia Visceral", "Fascia Superficial", "Fascia Muscular"], a: "Fascia Superficial", e: "La Fascia Superficial está directamente debajo de la dermis, en el tejido subcutáneo, y contiene grasa, nervios y vasos superficiales." },
-            { q: "La envoltura de tejido conectivo denso que rodea los músculos se llama:", o: ["Fascia Superficial", "Fascia Profunda", "Fascia Subserosa", "Epidermis"], a: "Fascia Profunda", e: "La Fascia Profunda es la que no contiene grasa y se organiza para envolver y compartimentar los músculos." },
-
+            { topic: "Fascia Superficial", info: "Es una envoltura de tejido conectivo que se encuentra en la <strong>hipodermis</strong>. Contiene <strong>grasa</strong>, nervios cutáneos y vasos superficiales.", q: "Qué tipo de fascia se encuentra en la <strong>hipodermis</strong> y contiene <strong>grasa</strong>?", o: ["Fascia Profunda", "Fascia Visceral", "Fascia Superficial", "Fascia Muscular"], a: "Fascia Superficial" },
+            { topic: "Fascia Profunda", info: "Es una capa de tejido conectivo denso y organizado que envuelve los <strong>músculos</strong>. A diferencia de la superficial, <strong>no contiene grasa</strong>.", q: "La envoltura de tejido conectivo denso que rodea los <strong>músculos</strong> se llama:", o: ["Fascia Superficial", "Fascia Profunda", "Fascia Subserosa", "Epidermis"], a: "Fascia Profunda" },
+            { topic: "Fascia Visceral (Subserosa)", info: "Se localiza entre la fascia profunda y las membranas serosas que recubren las <strong>cavidades corporales</strong>.", q: "La <strong>Fascia Visceral</strong> también se conoce como:", o: ["Fascia Profunda", "Fascia Superficial", "Fascia Subserosa", "Hipodermis"], a: "Fascia Subserosa" },
             // FUNCIONES DE LA PIEL
-            { q: "La síntesis de Vitamina D en la piel se activa por la exposición a:", o: ["El calor", "La luz solar (radiación UV)", "La humedad", "El frío"], a: "La luz solar (radiación UV)", e: "La piel juega un papel crucial en la producción de Vitamina D cuando se expone a la radiación ultravioleta del sol." },
-            { q: "¿Cómo contribuye la piel a la termorregulación cuando hace calor?", o: ["Contrayendo los vasos sanguíneos", "Produciendo más queratina", "Mediante la sudoración y vasodilatación", "Aumentando el grosor de la hipodermis"], a: "Mediante la sudoración y vasodilatación", e: "Para perder calor, la piel aumenta el flujo sanguíneo a la superficie (vasodilatación) y produce sudor, que al evaporarse enfría el cuerpo." },
-            // Additional questions to reach 50+
-            { q: "¿Qué estudia la Anatomía Patológica?", o: ["El desarrollo prenatal", "La estructura normal del cuerpo", "Las alteraciones morfológicas por enfermedades", "Las estructuras bajo el microscopio"], a: "Las alteraciones morfológicas por enfermedades", e: "La Anatomía Patológica se enfoca en cómo las enfermedades alteran la estructura de los tejidos y órganos." },
-            { q: "El eje que atraviesa el cuerpo de adelante hacia atrás es el:", o: ["Longitudinal", "Cefalocaudal", "Transversal", "Anteroposterior"], a: "Anteroposterior", e: "El eje Anteroposterior (o sagital) va desde la parte anterior (ventral) a la posterior (dorsal)." },
-            { q: "El término 'Ventral' es sinónimo de:", o: ["Superior", "Posterior", "Anterior", "Inferior"], a: "Anterior", e: "'Ventral' se refiere a la parte frontal o del vientre del cuerpo, siendo sinónimo de 'Anterior'." },
-            { q: "Las cavidades pleurales, que contienen los pulmones, se encuentran dentro de la:", o: ["Cavidad Dorsal", "Cavidad Torácica", "Cavidad Abdominal", "Cavidad Pélvica"], a: "Cavidad Torácica", e: "La Cavidad Torácica alberga las dos cavidades pleurales (para los pulmones) y el mediastino." },
-            { q: "El nivel de organización que precede al Nivel Celular es el:", o: ["Nivel Tisular", "Nivel de Organismo", "Nivel Químico", "Nivel de Órganos"], a: "Nivel Químico", e: "El Nivel Químico (átomos y moléculas) es el más básico, y sus componentes se unen para formar células." },
-            { q: "El sistema que se encarga de la defensa del cuerpo contra patógenos es el:", o: ["Cardiovascular", "Respiratorio", "Digestivo", "Linfático"], a: "Linfático", e: "El Sistema Linfático es una parte clave del sistema inmunitario, defendiendo al cuerpo de infecciones." },
-            { q: "El estudio de las estructuras que se pueden ver o palpar bajo la piel corresponde a la:", o: ["Anatomía Regional", "Anatomía de Superficie", "Anatomía del Desarrollo", "Anatomía Sistémica"], a: "Anatomía de Superficie", e: "La Anatomía de Superficie relaciona las estructuras internas con los relieves y marcas visibles en la superficie corporal." },
-            { q: "Las células de Merkel en la epidermis están asociadas con la función de:", o: ["Pigmentación", "Defensa inmune", "Producción de queratina", "Sensación táctil"], a: "Sensación táctil", e: "Las células de Merkel son receptores sensoriales que participan en la detección del tacto." },
-            { q: "La dermis reticular, la capa más profunda de la dermis, está compuesta principalmente por tejido:", o: ["Adiposo", "Nervioso", "Conectivo denso irregular", "Epitelial"], a: "Conectivo denso irregular", e: "Esta capa proporciona resistencia y elasticidad a la piel gracias a sus fibras de colágeno y elastina." },
-            { q: "El músculo erector del pelo tiene como función:", o: ["Lubricar el pelo", "Producir queratina", "Hacer que el pelo se erice ('piel de gallina')", "Dar color al pelo"], a: "Hacer que el pelo se erice ('piel de gallina')", e: "Este pequeño músculo liso se contrae en respuesta al frío o al miedo, haciendo que el pelo se levante." },
-            { q: "La Fascia Visceral también se conoce como:", o: ["Fascia Profunda", "Fascia Superficial", "Fascia Subserosa", "Hipodermis"], a: "Fascia Subserosa", e: "Se encuentra entre la fascia muscular interna y las membranas serosas que recubren las cavidades corporales." }
+            { topic: "Función: Protección", info: "La piel actúa como una <strong>barrera física</strong> contra traumatismos, <strong>patógenos</strong> y <strong>radiación UV</strong>.", q: "Una de las funciones principales de la piel es actuar como <strong>barrera protectora</strong> contra:", o: ["La deshidratación", "El frío extremo", "Patógenos y radiación UV", "La gravedad"], a: "Patógenos y radiación UV" },
+            { topic: "Función: Termorregulación", info: "La piel regula la temperatura corporal mediante la <strong>sudoración</strong> y la <strong>vasodilatación</strong> (para enfriar) o <strong>vasoconstricción</strong> (para conservar calor).", q: "Cómo contribuye la piel a la <strong>termorregulación</strong> cuando hace calor?", o: ["Contrayendo los vasos sanguíneos", "Produciendo más queratina", "Mediante la sudoración y vasodilatación", "Aumentando el grosor de la hipodermis"], a: "Mediante la sudoración y vasodilatación" },
+            { topic: "Función: Síntesis de Vitamina D", info: "La piel tiene la capacidad de producir <strong>Vitamina D</strong> cuando se expone a la <strong>radiación ultravioleta (UV)</strong> de la luz solar.", q: "La <strong>síntesis de Vitamina D</strong> en la piel se activa por la exposición a:", o: ["El calor", "La luz solar (radiación UV)", "La humedad", "El frío"], a: "La luz solar (radiación UV)" },
         ];
 
-        // Shuffle questions
-        questions.sort(() => Math.random() - 0.5);
+        let currentCardIndex = 0;
+        const userAnswers = new Array(studyData.length).fill(null);
 
-        let currentQuestionIndex = 0;
-        const userAnswers = new Array(questions.length).fill(null);
-
-        const questionText = document.getElementById('question-text');
-        const optionsContainer = document.getElementById('options-container');
-        const explanationBox = document.getElementById('explanation-box');
-        const prevBtn = document.getElementById('prev-btn');
-        const nextBtn = document.getElementById('next-btn');
-        const checkBtn = document.getElementById('check-btn');
-        const quizArea = document.getElementById('quiz-area');
-        const resultsContainer = document.getElementById('results-container');
+        // UI Elements
+        const elements = {
+            mainHeader: document.getElementById('main-header'),
+            quizArea: document.getElementById('quiz-area'),
+            resultsContainer: document.getElementById('results-container'),
+            cardContainer: document.getElementById('card-container'),
+            studyView: document.getElementById('study-view'),
+            studyTopic: document.getElementById('study-topic'),
+            studyInfo: document.getElementById('study-info'),
+            quizView: document.getElementById('quiz-view'),
+            questionText: document.getElementById('question-text'),
+            optionsContainer: document.getElementById('options-container'),
+            explanationBox: document.getElementById('explanation-box'),
+            startQuestionBtn: document.getElementById('start-question-btn'),
+            nextBtn: document.getElementById('next-btn'),
+            restartBtn: document.getElementById('restart-btn'),
+            progressBar: document.getElementById('progress-bar'),
+            progressText: document.getElementById('progress-text'),
+            scoreEl: document.getElementById('score'),
+            totalQuestionsEl: document.getElementById('total-questions'),
+            percentageEl: document.getElementById('percentage'),
+            finalMessageEl: document.getElementById('final-message')
+        };
         
-        const progressBar = document.getElementById('progress-bar');
-        const progressText = document.getElementById('progress-text');
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
 
-        function renderQuestion() {
-            const questionContent = document.getElementById('question-content');
-            questionContent.classList.add('question-fade-exit');
+        function renderCard() {
+            elements.cardContainer.classList.add('exiting');
 
             setTimeout(() => {
-                const question = questions[currentQuestionIndex];
-                questionText.textContent = question.q;
-                optionsContainer.innerHTML = '';
-                explanationBox.classList.add('hidden');
-                explanationBox.classList.remove('visible');
-
-                // Shuffle options for each question
-                const shuffledOptions = [...question.o].sort(() => Math.random() - 0.5);
+                const data = studyData[currentCardIndex];
+                
+                // Reset views
+                elements.studyView.classList.remove('hidden');
+                elements.quizView.classList.add('hidden');
+                
+                // Populate study view
+                elements.studyTopic.innerHTML = data.topic;
+                elements.studyInfo.innerHTML = data.info;
+                
+                // Populate quiz view (for later)
+                elements.questionText.innerHTML = data.q;
+                elements.optionsContainer.innerHTML = '';
+                
+                const shuffledOptions = [...data.o];
+                shuffleArray(shuffledOptions);
 
                 shuffledOptions.forEach(option => {
                     const label = document.createElement('label');
                     label.className = 'option-label block p-4 my-2 rounded-lg border-2 border-slate-200 cursor-pointer hover:bg-slate-100';
-                    label.innerHTML = `
-                        <input type="radio" name="option" value="${option}" class="mr-3 accent-indigo-500">
-                        ${option}
-                    `;
-                    optionsContainer.appendChild(label);
-
-                    // Add click listener to update selected style
-                    label.addEventListener('click', () => {
-                        document.querySelectorAll('.option-label').forEach(l => l.classList.remove('selected'));
-                        label.classList.add('selected');
-                        checkBtn.disabled = false;
-                    });
+                    label.innerHTML = `<input type="radio" name="option" value="${option}" class="mr-3 accent-indigo-500">${option}`;
+                    label.addEventListener('click', () => handleOptionSelection(label));
+                    elements.optionsContainer.appendChild(label);
                 });
-
-                updateProgress();
-                updateNavButtons();
-                restoreAnswerState();
                 
-                questionContent.classList.remove('question-fade-exit');
-                questionContent.classList.add('question-fade-enter');
-            }, 200);
+                updateProgress();
+                elements.nextBtn.classList.add('hidden');
+                elements.explanationBox.classList.add('hidden');
+                elements.cardContainer.classList.remove('exiting');
+            }, 300);
+        }
+
+        function handleOptionSelection(selectedLabel) {
+            if (userAnswers[currentCardIndex] !== null) return; // Prevent re-answering
+
+            document.querySelectorAll('.option-label').forEach(l => l.classList.remove('selected'));
+            selectedLabel.classList.add('selected');
+
+            checkAnswer(selectedLabel.querySelector('input').value);
         }
 
         function updateProgress() {
-            const progressPercentage = ((currentQuestionIndex + 1) / questions.length) * 100;
-            progressBar.style.width = `${progressPercentage}%`;
-            progressText.textContent = `Pregunta ${currentQuestionIndex + 1}/${questions.length}`;
+            const progressPercentage = ((currentCardIndex + 1) / studyData.length) * 100;
+            elements.progressBar.style.width = `${progressPercentage}%`;
+            elements.progressText.textContent = `${currentCardIndex + 1} / ${studyData.length}`;
         }
 
-        function updateNavButtons() {
-            prevBtn.disabled = currentQuestionIndex === 0;
-            nextBtn.disabled = currentQuestionIndex === questions.length - 1 && userAnswers[currentQuestionIndex] === null;
-            
-            checkBtn.classList.remove('hidden');
-            nextBtn.classList.add('hidden');
-            checkBtn.disabled = true; // Disabled until an option is selected
+        function checkAnswer(userAnswer) {
+            const data = studyData[currentCardIndex];
+            const isCorrect = userAnswer === data.a;
+            userAnswers[currentCardIndex] = { isCorrect };
 
-            if (userAnswers[currentQuestionIndex] !== null) {
-                checkBtn.classList.add('hidden');
-                nextBtn.classList.remove('hidden');
-            }
-            
-            if (currentQuestionIndex === questions.length - 1) {
-                nextBtn.textContent = "Ver Resultados";
-            } else {
-                 nextBtn.textContent = "Siguiente";
-            }
-        }
-        
-        function restoreAnswerState() {
-            const answerState = userAnswers[currentQuestionIndex];
-            if (answerState) {
-                const radios = document.querySelectorAll('input[name="option"]');
-                radios.forEach(radio => {
-                    radio.disabled = true;
-                    const parentLabel = radio.parentElement;
-                    if (radio.value === questions[currentQuestionIndex].a) {
-                        parentLabel.classList.add('correct-answer-label');
-                    }
-                    if (radio.value === answerState.selected && !answerState.isCorrect) {
-                        parentLabel.classList.add('incorrect-answer-label');
-                    }
-                });
-                showExplanation(answerState.isCorrect);
-            }
-        }
-        
-        function showExplanation(isCorrect) {
-            const question = questions[currentQuestionIndex];
-            explanationBox.classList.remove('hidden');
-            
-            if (isCorrect) {
-                explanationBox.innerHTML = `<strong class="text-green-700">¡Correcto!</strong> ${question.e}`;
-                explanationBox.className = 'explanation p-4 rounded-lg bg-green-50 text-green-800 border-green-400 visible';
-            } else {
-                explanationBox.innerHTML = `<strong class="text-red-700">Incorrecto.</strong> La respuesta correcta es <strong>"${question.a}"</strong>. <br>${question.e}`;
-                explanationBox.className = 'explanation p-4 rounded-lg bg-red-50 text-red-800 border-red-400 visible';
-            }
-        }
-
-        checkBtn.addEventListener('click', () => {
-            const selectedRadio = document.querySelector('input[name="option"]:checked');
-            if (!selectedRadio) return;
-
-            const userAnswer = selectedRadio.value;
-            const question = questions[currentQuestionIndex];
-            const isCorrect = userAnswer === question.a;
-            
-            userAnswers[currentQuestionIndex] = { selected: userAnswer, isCorrect: isCorrect };
-
-            const radios = document.querySelectorAll('input[name="option"]');
-            radios.forEach(radio => {
+            document.querySelectorAll('input[name="option"]').forEach(radio => {
                 radio.disabled = true;
                 const parentLabel = radio.parentElement;
-                if (radio.value === question.a) {
+                if (radio.value === data.a) {
                     parentLabel.classList.add('correct-answer-label');
                 }
-                 if (radio.checked && !isCorrect) {
+                if (radio.checked && !isCorrect) {
                     parentLabel.classList.add('incorrect-answer-label');
                 }
             });
-            
+
             showExplanation(isCorrect);
-            checkBtn.classList.add('hidden');
-            nextBtn.classList.remove('hidden');
+            elements.nextBtn.classList.remove('hidden');
+            if (currentCardIndex === studyData.length - 1) {
+                elements.nextBtn.textContent = "Ver Resultados";
+            } else {
+                elements.nextBtn.textContent = "Siguiente Tema";
+            }
+        }
+
+        function showExplanation(isCorrect) {
+            const data = studyData[currentCardIndex];
+            elements.explanationBox.classList.remove('hidden', 'visible');
+            
+            if (isCorrect) {
+                elements.explanationBox.innerHTML = `<strong class="text-green-700">¡Correcto!</strong> Recordatorio: ${data.info}`;
+                elements.explanationBox.className = 'explanation p-4 rounded-lg bg-green-50 text-green-800 border-green-400';
+            } else {
+                elements.explanationBox.innerHTML = `<strong class="text-red-700">Incorrecto.</strong> La respuesta correcta es <strong>"${data.a}"</strong>. <br>Recuerda: ${data.info}`;
+                elements.explanationBox.className = 'explanation p-4 rounded-lg bg-red-50 text-red-800 border-red-400';
+            }
+            // Use timeout to trigger transition
+            setTimeout(() => elements.explanationBox.classList.add('visible'), 50);
+        }
+        
+        function showResults() {
+            const score = userAnswers.filter(answer => answer && answer.isCorrect).length;
+            const total = studyData.length;
+            const percentage = Math.round((score / total) * 100);
+
+            elements.mainHeader.classList.add('hidden');
+            elements.quizArea.classList.add('hidden');
+            elements.resultsContainer.classList.remove('hidden');
+
+            elements.scoreEl.textContent = score;
+            elements.totalQuestionsEl.textContent = total;
+            elements.percentageEl.textContent = `${percentage}%`;
+
+            let message = "";
+            if (percentage >= 90) {
+                message = "¡Excelente! Un dominio impresionante del material.";
+                elements.percentageEl.className = "text-5xl font-bold my-4 text-green-500";
+            } else if (percentage >= 75) {
+                message = "¡Muy buen trabajo! Tienes una base sólida en el tema.";
+                elements.percentageEl.className = "text-5xl font-bold my-4 text-cyan-500";
+            } else if (percentage >= 50) {
+                message = "¡Buen esfuerzo! Sigue repasando para afianzar los conceptos.";
+                elements.percentageEl.className = "text-5xl font-bold my-4 text-indigo-500";
+            } else {
+                message = "¡Sigue estudiando! La práctica es clave para el éxito.";
+                elements.percentageEl.className = "text-5xl font-bold my-4 text-amber-500";
+            }
+            elements.finalMessageEl.textContent = message;
+        }
+        
+        function startApp() {
+            shuffleArray(studyData);
+            currentCardIndex = 0;
+            userAnswers.fill(null);
+            elements.resultsContainer.classList.add('hidden');
+            elements.mainHeader.classList.remove('hidden');
+            elements.quizArea.classList.remove('hidden');
+            renderCard();
+        }
+
+        elements.startQuestionBtn.addEventListener('click', () => {
+            elements.studyView.classList.add('hidden');
+            elements.quizView.classList.remove('hidden');
         });
 
-        nextBtn.addEventListener('click', () => {
-            if (currentQuestionIndex < questions.length - 1) {
-                currentQuestionIndex++;
-                renderQuestion();
+        elements.nextBtn.addEventListener('click', () => {
+            if (currentCardIndex < studyData.length - 1) {
+                currentCardIndex++;
+                renderCard();
             } else {
                 showResults();
             }
         });
-
-        prevBtn.addEventListener('click', () => {
-            if (currentQuestionIndex > 0) {
-                currentQuestionIndex--;
-                renderQuestion();
-            }
-        });
         
-        function showResults() {
-            const score = userAnswers.filter(answer => answer && answer.isCorrect).length;
-            const total = questions.length;
-            const percentage = Math.round((score / total) * 100);
-
-            quizArea.classList.add('hidden');
-            resultsContainer.classList.remove('hidden');
-
-            document.getElementById('score').textContent = score;
-            document.getElementById('total-questions').textContent = total;
-            const percentageEl = document.getElementById('percentage');
-            const finalMessageEl = document.getElementById('final-message');
-            
-            percentageEl.textContent = `${percentage}%`;
-
-            if (percentage === 100) {
-                finalMessageEl.innerHTML = "Respuesta generada automaticamente por gemini, te amo amor, soy titi (sacaste 100)";
-                percentageEl.className = "text-5xl font-bold my-4 text-green-500";
-            } else if (percentage >= 80) {
-                finalMessageEl.textContent = "Respuesta generada automaticamente por gemini, te amo amor, soy titi (sacaste entre 80-100)";
-                percentageEl.className = "text-5xl font-bold my-4 text-cyan-500";
-            } else if (percentage >= 60) {
-                finalMessageEl.textContent = "Respuesta generada automaticamente por gemini, te amo amor, soy titi (sacaste entre 60-80)";
-                percentageEl.className = "text-5xl font-bold my-4 text-indigo-500";
-            } else {
-                finalMessageEl.textContent = "Respuesta generada automaticamente por gemini, te amo amor, soy titi (sacaste menos de 60)";
-                percentageEl.className = "text-5xl font-bold my-4 text-amber-500";
-            }
-        }
+        elements.restartBtn.addEventListener('click', startApp);
 
         // Initial load
-        renderQuestion();
+        startApp();
     </script>
 </body>
 </html>
