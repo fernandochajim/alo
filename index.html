@@ -67,8 +67,8 @@
 
         <!-- Header -->
         <header class="text-center mb-6">
-            <h1 class="text-3xl sm:text-4xl font-bold text-indigo-600">Examen de Morfología 🩺❤️</h1>
-            <p class="mt-2 text-slate-500">¡Demuestra cuánto sabes, mi amor!</p>
+            <h1 class="text-3xl sm:text-4xl font-bold text-indigo-600">Examen de Morfología 🩺</h1>
+
         </header>
 
         <!-- Quiz Area -->
@@ -370,16 +370,16 @@
             percentageEl.textContent = `${percentage}%`;
 
             if (percentage === 100) {
-                finalMessageEl.innerHTML = "¡Felicidades, mi vida! ¡Eres increíblemente inteligente! 💖 Eres una experta total.";
+                finalMessageEl.innerHTML = "Respuesta generada automaticamente por gemini, te amo amor, soy titi (sacaste 100)";
                 percentageEl.className = "text-5xl font-bold my-4 text-green-500";
             } else if (percentage >= 80) {
-                finalMessageEl.textContent = "¡Wow! ¡Casi perfecto! Estoy muy orgulloso de ti. Eres brillante. ✨";
+                finalMessageEl.textContent = "Respuesta generada automaticamente por gemini, te amo amor, soy titi (sacaste entre 80-100)";
                 percentageEl.className = "text-5xl font-bold my-4 text-cyan-500";
             } else if (percentage >= 60) {
-                finalMessageEl.textContent = "¡Muy bien hecho! Sabes muchísimo. ¡Sigue así, vas por un gran camino! 😊";
+                finalMessageEl.textContent = "Respuesta generada automaticamente por gemini, te amo amor, soy titi (sacaste entre 60-80)";
                 percentageEl.className = "text-5xl font-bold my-4 text-indigo-500";
             } else {
-                finalMessageEl.textContent = "¡Buen intento! Lo importante es aprender juntos. ¡Eres genial por esforzarte! 💪";
+                finalMessageEl.textContent = "Respuesta generada automaticamente por gemini, te amo amor, soy titi (sacaste menos de 60)";
                 percentageEl.className = "text-5xl font-bold my-4 text-amber-500";
             }
         }
