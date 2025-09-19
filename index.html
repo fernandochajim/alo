@@ -3,44 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Examen Interactivo de Morfología</title>
+    <title>Guía Interactiva de Morfología</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f1f5f9; /* slate-100 */
+            background-color: #f0f4f8;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
         .card-container {
-            min-height: 500px;
+            min-height: 520px;
             display: flex;
             flex-direction: column;
-            transition: opacity 0.3s ease-out, transform 0.3s ease-out;
-        }
-        .card-container.exiting {
-            opacity: 0;
-            transform: scale(0.98);
         }
         .option-label {
             transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
         }
-        .option-label.selected {
-            background-color: #e0e7ff; /* indigo-100 */
-            border-color: #6366f1; /* indigo-500 */
-        }
         .correct-answer-label {
-            background-color: #dcfce7 !important; /* green-100 */
-            border-color: #22c55e !important; /* green-500 */
-            color: #15803d; /* green-700 */
+            background-color: #dcfce7 !important;
+            border-color: #22c55e !important;
+            color: #15803d;
         }
         .incorrect-answer-label {
-            background-color: #fee2e2 !important; /* red-100 */
-            border-color: #ef4444 !important; /* red-500 */
-            color: #b91c1c; /* red-700 */
+            background-color: #fee2e2 !important;
+            border-color: #ef4444 !important;
+            color: #b91c1c;
         }
         .explanation {
             border-left-width: 4px;
@@ -58,150 +49,745 @@
             transition: width 0.4s ease-in-out;
         }
         .view-transition {
-            animation: fadeIn 0.4s ease-in-out;
+            animation: fadeIn 0.5s ease-in-out;
         }
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+            from { opacity: 0; transform: translateY(15px); }
             to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
-<body class="text-slate-800">
+<body class="text-slate-900">
 
-    <div class="container mx-auto max-w-lg p-4 min-h-screen flex flex-col justify-center">
+    <div class="container mx-auto max-w-2xl p-4 min-h-screen flex flex-col justify-center">
 
-        <!-- Header -->
-        <header id="main-header" class="text-center mb-4">
-            <h1 class="text-3xl font-bold text-slate-800">Examen de Morfología</h1>
-            <p class="mt-1 text-slate-500">Formato de Estudio Interactivo</p>
+        <header id="main-header" class="text-left mb-5 px-2">
+            <h1 class="text-3xl font-bold text-slate-800">⭐ Gizmo</h1>
+            <p class="mt-1 text-slate-500">Morfología Humana</p>
         </header>
 
-        <!-- Quiz Area -->
-        <div id="quiz-area" class="bg-white p-6 sm:p-8 rounded-2xl shadow-lg w-full">
+        <div id="quiz-area" class="bg-white p-6 sm:p-8 rounded-2xl shadow-xl w-full">
             
-            <!-- Progress Bar -->
             <div id="progress-container" class="mb-6">
-                <div class="flex justify-between items-center mb-1 text-xs text-slate-500 font-medium">
-                    <span>PROGRESO</span>
-                    <span id="progress-text"></span>
-                </div>
-                <div class="w-full bg-slate-200 rounded-full h-2">
-                    <div id="progress-bar" class="bg-indigo-500 h-2 rounded-full progress-bar-fill"></div>
+                <div class="w-full bg-slate-200 rounded-full h-2.5">
+                    <div id="progress-bar" class="bg-indigo-600 h-2.5 rounded-full progress-bar-fill"></div>
                 </div>
             </div>
 
             <div id="card-container" class="card-container">
-                <!-- Study View -->
-                <div id="study-view" class="flex-grow flex flex-col justify-center text-center view-transition">
-                    <span id="study-topic" class="text-sm font-semibold text-indigo-500 uppercase tracking-wider"></span>
-                    <p id="study-info" class="text-xl sm:text-2xl font-semibold my-4"></p>
-                    <button id="start-question-btn" class="w-full mt-auto bg-indigo-500 text-white font-semibold py-3 px-6 rounded-xl hover:bg-indigo-600 transition-all shadow-sm">Entendido, ¡vamos a la pregunta!</button>
+                <div id="study-view" class="flex-grow flex flex-col justify-between view-transition">
+                    <div>
+                        <p class="text-2xl sm:text-3xl font-bold my-4" id="study-title"></p>
+                        <p id="study-info" class="text-lg text-slate-700 leading-relaxed"></p>
+                    </div>
+                    <button id="start-question-btn" class="w-full mt-8 bg-indigo-600 text-white font-semibold py-3 px-6 rounded-xl hover:bg-indigo-700 transition-all shadow-md">Continuar</button>
                 </div>
                 
-                <!-- Quiz View -->
                 <div id="quiz-view" class="hidden flex-grow flex flex-col view-transition">
-                    <p id="question-text" class="text-lg font-semibold mb-4"></p>
+                    <p id="question-text" class="text-xl font-semibold mb-6"></p>
                     <div id="options-container" class="space-y-3"></div>
                     <div id="explanation-box" class="explanation p-4 rounded-lg bg-slate-50 text-slate-700 hidden"></div>
-                    <button id="next-btn" class="w-full mt-auto bg-slate-700 text-white font-semibold py-3 px-6 rounded-xl hover:bg-slate-800 transition-all shadow-sm hidden">Siguiente Tema</button>
+                    <button id="next-btn" class="w-full mt-6 bg-slate-800 text-white font-semibold py-3 px-6 rounded-xl hover:bg-slate-900 transition-all shadow-md hidden">Siguiente</button>
                 </div>
             </div>
         </div>
         
-        <!-- Results Section (Initially Hidden) -->
-        <div id="results-container" class="hidden text-center bg-white p-8 rounded-2xl shadow-lg">
-             <h2 class="text-3xl font-bold text-slate-800 mb-4">Resultados Finales</h2>
+        <div id="results-container" class="hidden text-center bg-white p-8 rounded-2xl shadow-xl view-transition">
+             <h2 class="text-3xl font-bold text-slate-800 mb-4">¡Completado!</h2>
             <div class="text-center text-lg">
                 <p>Respuestas Correctas: <span id="score" class="font-bold text-green-600">0</span> de <span id="total-questions" class="font-bold">0</span></p>
-                <p class="text-5xl font-bold my-4" id="percentage">0%</p>
+                <p class="text-6xl font-extrabold my-4" id="percentage">0%</p>
                 <p class="mt-4 text-slate-600 text-base" id="final-message"></p>
-                <button id="restart-btn" class="w-full mt-6 bg-indigo-500 text-white font-semibold py-3 px-6 rounded-xl hover:bg-indigo-600 transition-all">Volver a Intentar</button>
+                <button id="restart-btn" class="w-full mt-8 bg-indigo-600 text-white font-semibold py-3 px-6 rounded-xl hover:bg-indigo-700 transition-all">Volver a Intentar</button>
             </div>
         </div>
     </div>
 
     <script>
         const studyData = [
-            // MORFOLOGÍA
-            { topic: "Embriología", info: "Es la rama de la morfología que estudia el <strong>desarrollo prenatal</strong>, desde la fecundación hasta el nacimiento.", q: "Qué rama de la morfología se enfoca en el <strong>desarrollo prenatal</strong>?", o: ["Histología", "Embriología", "Anatomía Patológica", "Citología"], a: "Embriología" },
-            { topic: "Histología", info: "Es el <strong>estudio microscópico</strong> de la estructura y función de los <strong>tejidos</strong> corporales.", q: "Cuál es el objeto de estudio de la <strong>Histología</strong>?", o: ["Las células", "Los órganos", "Los tejidos a nivel microscópico", "Las enfermedades"], a: "Los tejidos a nivel microscópico" },
-            { topic: "Anatomía Patológica", info: "Estudia las <strong>alteraciones morfológicas</strong> (de forma y estructura) en órganos y tejidos que son <strong>causadas por enfermedades</strong>.", q: "Qué estudia la <strong>Anatomía Patológica</strong>?", o: ["El desarrollo normal", "La estructura del cuerpo sano", "Las alteraciones por enfermedades", "Las estructuras bajo el microscopio"], a: "Las alteraciones por enfermedades" },
-            // PLANIMETRÍA
-            { topic: "Plano Sagital", info: "Es un plano vertical que divide el cuerpo en una parte <strong>derecha</strong> y otra <strong>izquierda</strong>.", q: "El <strong>plano Sagital</strong> divide el cuerpo en:", o: ["Parte superior e inferior", "Parte anterior y posterior", "Parte derecha e izquierda", "Partes desiguales"], a: "Parte derecha e izquierda" },
-            { topic: "Plano Coronal o Frontal", info: "Es un plano vertical que divide el cuerpo en una parte <strong>anterior (ventral)</strong> y otra <strong>posterior (dorsal)</strong>.", q: "Un plano que divide el cuerpo en <strong>anterior</strong> y <strong>posterior</strong> se llama:", o: ["Plano Sagital", "Plano Transversal", "Plano Coronal o Frontal", "Plano Oblicuo"], a: "Plano Coronal o Frontal" },
-            { topic: "Plano Transversal", info: "Es un plano horizontal que divide el cuerpo en una parte <strong>superior</strong> y otra <strong>inferior</strong>.", q: "Qué plano usarías para dividir el cuerpo en una sección <strong>superior</strong> y otra <strong>inferior</strong>?", o: ["Plano Sagital", "Plano Transversal", "Plano Frontal", "Eje Longitudinal"], a: "Plano Transversal" },
-            // EJES
-            { topic: "Eje Anteroposterior", info: "Es un eje imaginario que atraviesa el cuerpo de <strong>adelante hacia atrás</strong> (de ventral a dorsal).", q: "El eje que atraviesa el cuerpo de <strong>adelante hacia atrás</strong> es el:", o: ["Longitudinal", "Cefalocaudal", "Transversal", "Anteroposterior"], a: "Anteroposterior" },
-            { topic: "Eje Cefalocaudal", info: "También llamado <strong>Longitudinal</strong>, es un eje que recorre el cuerpo desde la <strong>cabeza hasta los pies</strong> (de superior a inferior).", q: "El eje <strong>Cefalocaudal</strong> también se conoce como:", o: ["Anteroposterior", "Transversal", "Longitudinal", "Horizontal"], a: "Longitudinal" },
-            // TÉRMINOS
-            { topic: "Término: Superior / Craneal", info: "Indica una estructura que está <strong>más alta</strong> o <strong>más cerca de la cabeza</strong>.", q: "El término <strong>'Craneal'</strong> se usa como sinónimo de:", o: ["Inferior", "Anterior", "Superior", "Posterior"], a: "Superior" },
-            { topic: "Término: Inferior / Caudal", info: "Indica una estructura que está <strong>más baja</strong> o <strong>más cerca de los pies</strong>.", q: "Cuál es el término opuesto a <strong>'Superior'</strong>?", o: ["Ventral", "Dorsal", "Lateral", "Inferior o Caudal"], a: "Inferior o Caudal" },
-            { topic: "Término: Medial", info: "Indica que una estructura está <strong>más cerca de la línea media</strong> del cuerpo (del plano sagital medio).", q: "Si una estructura está <strong>más cerca de la línea media</strong> del cuerpo, se dice que es:", o: ["Lateral", "Distal", "Medial", "Proximal"], a: "Medial" },
-            { topic: "Término: Lateral", info: "Indica que una estructura está <strong>más alejada de la línea media</strong> del cuerpo.", q: "El término opuesto a <strong>'Medial'</strong> es:", o: ["Proximal", "Distal", "Anterior", "Lateral"], a: "Lateral" },
-            { topic: "Término: Proximal", info: "Describe una estructura que está <strong>más cerca del tronco</strong> o del punto de origen de una extremidad.", q: "El término <strong>'Proximal'</strong> describe una estructura que está:", o: ["Más cerca de la línea media", "Más alejada del tronco", "Más cerca del tronco o punto de origen", "En la superficie del cuerpo"], a: "Más cerca del tronco o punto de origen" },
-            { topic: "Término: Distal", info: "Describe una estructura que está <strong>más alejada del tronco</strong> o del punto de origen de una extremidad.", q: "El codo es <strong>proximal</strong> al hombro, mientras que la muñeca es <strong>____</strong> al codo.", o: ["Medial", "Lateral", "Proximal", "Distal"], a: "Distal" },
-            // POSICIÓN ANATÓMICA
-            { topic: "Posición Anatómica", info: "Es la postura de referencia: cuerpo <strong>erecto</strong>, cabeza y ojos <strong>al frente</strong>, miembros superiores a los lados con las <strong>palmas hacia adelante</strong>.", q: "Cómo deben estar las <strong>palmas de las manos</strong> en la posición anatómica?", o: ["Mirando hacia atrás", "Mirando hacia los lados", "Mirando hacia adelante", "Apoyadas en los muslos"], a: "Mirando hacia adelante" },
-            // CAVIDADES
-            { topic: "Cavidad Dorsal", info: "Es la cavidad posterior que protege el sistema nervioso central. Se subdivide en la <strong>cavidad craneal</strong> (cerebro) y el <strong>canal vertebral</strong> (médula espinal).", q: "La <strong>cavidad craneal</strong> y el <strong>canal vertebral</strong> juntos forman la:", o: ["Cavidad Ventral", "Cavidad Abdominopélvica", "Cavidad Torácica", "Cavidad Dorsal"], a: "Cavidad Dorsal" },
-            { topic: "Cavidad Torácica", info: "Es la parte superior de la cavidad ventral. Contiene las <strong>cavidades pleurales</strong> (pulmones) y el <strong>mediastino</strong> (donde está el corazón).", q: "Las <strong>cavidades pleurales</strong> se encuentran dentro de la:", o: ["Cavidad Dorsal", "Cavidad Torácica", "Cavidad Abdominal", "Cavidad Pélvica"], a: "Cavidad Torácica" },
-            { topic: "Cavidad Pericárdica", info: "Es una cavidad dentro del <strong>mediastino</strong> que contiene específicamente al <strong>corazón</strong>.", q: "En qué cavidad se encuentra el <strong>corazón</strong>?", o: ["Cavidad Pleural", "Cavidad Pericárdica", "Canal Vertebral", "Cavidad Abdominal"], a: "Cavidad Pericárdica" },
-            { topic: "Cavidad Abdominopélvica", info: "Se extiende desde el diafragma hasta la ingle y se divide en <strong>cavidad abdominal</strong> y <strong>cavidad pélvica</strong>.", q: "La cavidad que contiene tanto el estómago como la vejiga es la:", o: ["Cavidad Torácica", "Cavidad Dorsal", "Cavidad Abdominopélvica", "Cavidad Craneal"], a: "Cavidad Abdominopélvica" },
-            // DIVISIÓN CORPORAL
-            { topic: "División: Tronco", info: "Es la parte central del cuerpo, y se subdivide en <strong>tórax</strong>, <strong>abdomen</strong> y <strong>pelvis</strong>.", q: "El tórax, el abdomen y la pelvis son subdivisiones del:", o: ["Miembro Superior", "Tronco", "Miembro Inferior", "Cuello"], a: "Tronco" },
-            { topic: "División: Miembro Superior", info: "Está compuesto por el <strong>brazo</strong> (hombro a codo), <strong>antebrazo</strong> (codo a muñeca) y <strong>mano</strong>.", q: "El <strong>antebrazo</strong> se encuentra entre:", o: ["El hombro y el brazo", "El brazo y la mano", "La muñeca y los dedos", "La cadera y el muslo"], a: "El brazo y la mano" },
-            // NIVELES DE ORGANIZACIÓN
-            { topic: "Nivel Químico", info: "Es el nivel más básico, compuesto por <strong>átomos y moléculas</strong> que son los componentes fundamentales de la materia viva.", q: "El nivel de organización que precede al Nivel Celular es el:", o: ["Nivel Tisular", "Nivel de Organismo", "Nivel Químico", "Nivel de Órganos"], a: "Nivel Químico" },
-            { topic: "Nivel Tisular", info: "Es el nivel donde las células similares se agrupan para formar <strong>tejidos</strong>. Se encuentra entre el nivel celular y el de órganos.", q: "Qué nivel de organización se encuentra entre el nivel <strong>celular</strong> y el de <strong>órganos</strong>?", o: ["Nivel Químico", "Nivel Tisular", "Nivel de Sistemas", "Nivel de Organismo"], a: "Nivel Tisular" },
-            { topic: "Nivel de Organismo", info: "Es el nivel más complejo, donde todos los <strong>aparatos y sistemas</strong> funcionan en conjunto para constituir un ser vivo completo.", q: "El nivel más complejo de organización biológica es el:", o: ["Nivel Celular", "Nivel de Órganos", "Nivel de Aparatos y Sistemas", "Nivel de Organismo"], a: "Nivel de Organismo" },
-            // SISTEMAS CORPORALES
-            { topic: "Sistema Tegumentario", info: "Está formado por la <strong>piel</strong> y sus estructuras anexas (<strong>faneras</strong>) como el pelo y las uñas. Es la cubierta protectora del cuerpo.", q: "La <strong>piel</strong> y sus <strong>anexos</strong> (pelo, uñas) forman el sistema:", o: ["Esquelético", "Muscular", "Tegumentario", "Cardiovascular"], a: "Tegumentario" },
-            { topic: "Sistema Endocrino", info: "Es el sistema de glándulas que producen <strong>hormonas</strong> para regular procesos corporales como el metabolismo y el crecimiento.", q: "Qué sistema es responsable de la producción de <strong>hormonas</strong>?", o: ["Sistema Nervioso", "Sistema Endocrino", "Sistema Linfático", "Sistema Urinario"], a: "Sistema Endocrino" },
-            { topic: "Sistema Linfático", info: "Es una parte clave del sistema inmunitario. <strong>Defiende</strong> al cuerpo contra patógenos y transporta la <strong>linfa</strong>.", q: "El sistema que se encarga de la <strong>defensa</strong> del cuerpo contra patógenos es el:", o: ["Cardiovascular", "Respiratorio", "Digestivo", "Linfático"], a: "Linfático" },
-            // RAMAS DE LA ANATOMÍA
-            { topic: "Anatomía Sistémica", info: "También llamada <strong>Descriptiva</strong>, estudia el cuerpo humano subdividiéndolo en <strong>sistemas y aparatos</strong>.", q: "El estudio del cuerpo por <strong>sistemas</strong> corresponde a la anatomía:", o: ["Regional", "De Superficie", "Sistémica", "Comparada"], a: "Sistémica" },
-            { topic: "Anatomía Regional", info: "También llamada <strong>Topográfica</strong>, estudia el cuerpo por <strong>regiones</strong> (cabeza, cuello, tórax) y las relaciones entre sus estructuras.", q: "Si se estudia la cabeza y todas las estructuras que contiene, se aplica la anatomía:", o: ["Sistémica", "Regional", "Clínica", "Del Desarrollo"], a: "Regional" },
-            { topic: "Anatomía de Superficie", info: "Es el estudio de las estructuras internas en relación con los relieves que se pueden <strong>ver o palpar en la piel</strong>.", q: "El estudio de las estructuras que se pueden <strong>palpar bajo la piel</strong> corresponde a la:", o: ["Anatomía Regional", "Anatomía de Superficie", "Anatomía del Desarrollo", "Anatomía Sistémica"], a: "Anatomía de Superficie" },
-            { topic: "Anatomía Microscópica", info: "Requiere el uso de un <strong>microscopio</strong>. Incluye la <strong>Citología</strong> (estudio de células) y la <strong>Histología</strong> (estudio de tejidos).", q: "Qué incluye la <strong>Anatomía Microscópica</strong>?", o: ["Citología e Histología", "Embriología y Radiología", "Sistémica y Regional", "Clínica y Aplicada"], a: "Citología e Histología" },
-            { topic: "Anatomía Radiológica", info: "Es la rama que estudia la estructura del cuerpo mediante el uso de <strong>técnicas de imagen</strong> como Rayos X, TC, RM, etc.", q: "La anatomía que estudia el cuerpo mediante <strong>técnicas de imagen</strong> es la:", o: ["Anatomía Clínica", "Anatomía de Superficie", "Anatomía Radiológica", "Anatomía Microscópica"], a: "Anatomía Radiológica" },
-            // IMAGENOLOGÍA
-            { topic: "Radiología Convencional", info: "Usa <strong>Rayos X</strong>. Las estructuras densas como los huesos se ven blancas (<strong>radiopacas</strong>) y las menos densas como los pulmones, oscuras (<strong>radiolúcidas</strong>).", q: "En una radiografía, un hueso se ve blanco porque es una estructura:", o: ["Radiolúcida", "Hipointensa", "Radiopaca", "Ecorefringente"], a: "Radiopaca" },
-            { topic: "Ultrasonografía (Ecografía)", info: "Usa <strong>ondas de sonido</strong> de alta frecuencia para crear imágenes en tiempo real. <strong>No utiliza radiación ionizante</strong>.", q: "Cuál de estas técnicas de imagen <strong>NO utiliza radiación ionizante</strong>?", o: ["Radiología Convencional", "Tomografía Computarizada (TC)", "Medicina Nuclear", "Ultrasonografía (Ecografía)"], a: "Ultrasonografía (Ecografía)" },
-            { topic: "Tomografía Computarizada (TC)", info: "Combina una serie de <strong>radiografías</strong> desde diferentes ángulos para crear <strong>imágenes transversales</strong> (cortes) del cuerpo.", q: "La técnica que crea <strong>'cortes'</strong> transversales del cuerpo usando Rayos X es la:", o: ["Resonancia Magnética (RM)", "Ecografía", "Tomografía Computarizada (TC)", "Gammagrafía"], a: "Tomografía Computarizada (TC)" },
-            { topic: "Resonancia Magnética (RM)", info: "Usa un <strong>campo magnético</strong> potente y <strong>ondas de radio</strong> para generar imágenes detalladas, especialmente de <strong>tejidos blandos</strong>. No usa radiación ionizante.", q: "Qué técnica de imagen utiliza un <strong>campo magnético</strong> y es ideal para tejidos blandos?", o: ["Tomografía Computarizada (TC)", "Ultrasonografía", "Resonancia Magnética (RM)", "Radiología Convencional"], a: "Resonancia Magnética (RM)" },
-            { topic: "Tomografía por Emisión de Positrones (PET)", info: "Es una técnica de medicina nuclear que muestra la <strong>actividad metabólica</strong> de las células, usando un <strong>radiotrazador</strong>.", q: "La <strong>Tomografía por Emisión de Positrones (PET)</strong> es única porque muestra:", o: ["La densidad de los huesos", "La estructura de los órganos", "La actividad metabólica de las células", "El flujo sanguíneo en tiempo real"], a: "La actividad metabólica de las células" },
-            // PIEL
-            { topic: "Capas de la Piel", info: "La piel está compuesta por tres capas principales: <strong>Epidermis</strong> (la más externa), <strong>Dermis</strong> (intermedia) e <strong>Hipodermis</strong> (la más profunda).", q: "Cuál es la capa <strong>intermedia</strong> de la piel?", o: ["Epidermis", "Hipodermis", "Fascia Profunda", "Dermis"], a: "Dermis" },
-            { topic: "Epidermis: Estratos", info: "La epidermis, de superficial a profundo, contiene los estratos: <strong>Córneo, Lúcido, Granuloso, Espinoso y Basal</strong>.", q: "El estrato más <strong>superficial</strong> de la epidermis, compuesto por células muertas, es el:", o: ["Estrato Basal", "Estrato Espinoso", "Estrato Córneo", "Estrato Granuloso"], a: "Estrato Córneo" },
-            { topic: "Epidermis: Células", info: "La epidermis contiene <strong>queratinocitos</strong> (los más abundantes), <strong>melanocitos</strong> (pigmento), <strong>células de Langerhans</strong> (inmunes) y <strong>células de Merkel</strong> (sensoriales).", q: "Los <strong>queratinocitos</strong>, <strong>melanocitos</strong> y <strong>células de Langerhans</strong> se encuentran en la:", o: ["Dermis", "Hipodermis", "Epidermis", "Fascia Superficial"], a: "Epidermis" },
-            { topic: "Dermis", info: "La capa intermedia. Contiene <strong>vasos sanguíneos, nervios, folículos pilosos y glándulas</strong>. Se divide en Dermis <strong>Papilar</strong> (superficial) y <strong>Reticular</strong> (profunda).", q: "Los <strong>vasos sanguíneos</strong> y <strong>folículos pilosos</strong> se alojan principalmente en la:", o: ["Epidermis", "Dermis", "Hipodermis", "Estrato Córneo"], a: "Dermis" },
-            { topic: "Hipodermis", info: "También llamado <strong>tejido subcutáneo</strong>, es la capa más profunda, compuesta principalmente por <strong>tejido adiposo</strong> (grasa).", q: "Cuál es la capa de la piel compuesta principalmente por <strong>tejido adiposo</strong>?", o: ["Epidermis", "Dermis", "Hipodermis", "Fascia Profunda"], a: "Hipodermis" },
-            // FANERAS
-            { topic: "Faneras: Pelos", info: "Son estructuras de queratina. Se asocian al <strong>músculo erector del pelo</strong> (causa la 'piel de gallina') y a las <strong>glándulas sebáceas</strong>.", q: "El músculo que causa la 'piel de gallina' se llama:", o: ["Músculo liso", "Músculo erector del pelo", "Músculo cutáneo", "Músculo folicular"], a: "Músculo erector del pelo" },
-            { topic: "Faneras: Uñas", info: "Son <strong>placas de queratina</strong> dura que protegen los extremos de los dedos de manos y pies.", q: "Las uñas son placas compuestas principalmente de:", o: ["Colágeno", "Melanina", "Tejido adiposo", "Queratina"], a: "Queratina" },
-            { topic: "Glándulas Sudoríparas", info: "Producen <strong>sudor</strong> para la termorregulación. Se dividen en <strong>Ecrinas</strong> (en todo el cuerpo) y <strong>Apocrinas</strong> (axilas, ingle).", q: "Las glándulas que producen <strong>sudor</strong> para regular la temperatura son las:", o: ["Sebáceas", "Sudoríparas", "Mamarias", "Salivales"], a: "Sudoríparas" },
-            { topic: "Glándulas Sebáceas", info: "Producen una sustancia oleosa llamada <strong>sebo</strong>, cuya función es <strong>lubricar</strong> la piel y el pelo.", q: "El <strong>sebo</strong> es una sustancia oleosa producida por las glándulas:", o: ["Sudoríparas", "Apocrinas", "Mamarias", "Sebáceas"], a: "Sebáceas" },
-            // FASCIAS
-            { topic: "Fascia Superficial", info: "Es una envoltura de tejido conectivo que se encuentra en la <strong>hipodermis</strong>. Contiene <strong>grasa</strong>, nervios cutáneos y vasos superficiales.", q: "Qué tipo de fascia se encuentra en la <strong>hipodermis</strong> y contiene <strong>grasa</strong>?", o: ["Fascia Profunda", "Fascia Visceral", "Fascia Superficial", "Fascia Muscular"], a: "Fascia Superficial" },
-            { topic: "Fascia Profunda", info: "Es una capa de tejido conectivo denso y organizado que envuelve los <strong>músculos</strong>. A diferencia de la superficial, <strong>no contiene grasa</strong>.", q: "La envoltura de tejido conectivo denso que rodea los <strong>músculos</strong> se llama:", o: ["Fascia Superficial", "Fascia Profunda", "Fascia Subserosa", "Epidermis"], a: "Fascia Profunda" },
-            { topic: "Fascia Visceral (Subserosa)", info: "Se localiza entre la fascia profunda y las membranas serosas que recubren las <strong>cavidades corporales</strong>.", q: "La <strong>Fascia Visceral</strong> también se conoce como:", o: ["Fascia Profunda", "Fascia Superficial", "Fascia Subserosa", "Hipodermis"], a: "Fascia Subserosa" },
-            // FUNCIONES DE LA PIEL
-            { topic: "Función: Protección", info: "La piel actúa como una <strong>barrera física</strong> contra traumatismos, <strong>patógenos</strong> y <strong>radiación UV</strong>.", q: "Una de las funciones principales de la piel es actuar como <strong>barrera protectora</strong> contra:", o: ["La deshidratación", "El frío extremo", "Patógenos y radiación UV", "La gravedad"], a: "Patógenos y radiación UV" },
-            { topic: "Función: Termorregulación", info: "La piel regula la temperatura corporal mediante la <strong>sudoración</strong> y la <strong>vasodilatación</strong> (para enfriar) o <strong>vasoconstricción</strong> (para conservar calor).", q: "Cómo contribuye la piel a la <strong>termorregulación</strong> cuando hace calor?", o: ["Contrayendo los vasos sanguíneos", "Produciendo más queratina", "Mediante la sudoración y vasodilatación", "Aumentando el grosor de la hipodermis"], a: "Mediante la sudoración y vasodilatación" },
-            { topic: "Función: Síntesis de Vitamina D", info: "La piel tiene la capacidad de producir <strong>Vitamina D</strong> cuando se expone a la <strong>radiación ultravioleta (UV)</strong> de la luz solar.", q: "La <strong>síntesis de Vitamina D</strong> en la piel se activa por la exposición a:", o: ["El calor", "La luz solar (radiación UV)", "La humedad", "El frío"], a: "La luz solar (radiación UV)" },
-        ];
+    // --- RAMAS DE LA MORFOLOGÍA ---
+    {
+        title: "Sistema Respiratorio",
+        info: "Este es el sistema de 'intercambio de gases' del cuerpo. Su función principal es tomar el <strong>oxígeno</strong> del aire, un gas esencial para que nuestras células produzcan energía, y eliminar el <strong>dióxido de carbono</strong>, un producto de desecho de ese mismo proceso. Los pulmones son los órganos estrella de este sistema.",
+        q: "Considerando su propósito, ¿cuál es la función primordial del sistema respiratorio?",
+        o: [
+            "Transportar nutrientes a través de la sangre.",
+            "Facilitar el intercambio de oxígeno y dióxido de carbono entre el cuerpo y el ambiente.",
+            "Filtrar los desechos de la sangre para producir orina.",
+            "Descomponer los alimentos para su absorción."
+        ],
+        a: "Facilitar el intercambio de oxígeno y dióxido de carbono entre el cuerpo y el ambiente."
+    },
+    {
+        title: "Sistema Digestivo",
+        info: "Funciona como una 'planta de procesamiento de alimentos'. Su misión es tomar los alimentos que comemos y descomponerlos, tanto mecánica (masticando) como químicamente (con jugos gástricos), en moléculas suficientemente pequeñas (<strong>nutrientes</strong>) para ser absorbidas y utilizadas por el cuerpo como energía y para la construcción de tejidos.",
+        q: "¿Cuál es el resultado final del proceso llevado a cabo por el sistema digestivo?",
+        o: [
+            "La producción de hormonas para el crecimiento.",
+            "La eliminación de dióxido de carbono del cuerpo.",
+            "La descomposición de alimentos en nutrientes absorbibles.",
+            "La oxigenación de la sangre en los pulmones."
+        ],
+        a: "La descomposición de alimentos en nutrientes absorbibles."
+    },
+    {
+        title: "Sistema Urinario",
+        info: "Este sistema es la 'planta de tratamiento y purificación de agua' del cuerpo. Sus órganos principales, los <strong>riñones</strong>, filtran la sangre constantemente para eliminar sustancias de desecho y el exceso de agua, produciendo <strong>orina</strong>. Al hacerlo, mantiene el equilibrio de líquidos y electrolitos del cuerpo, lo cual es vital.",
+        q: "La función principal del sistema urinario, llevada a cabo por los riñones, es:",
+        o: [
+            "Absorber oxígeno del aire.",
+            "Secretar jugos digestivos para descomponer grasas.",
+            "Filtrar la sangre para regular su composición y eliminar desechos.",
+            "Producir células de defensa para el sistema inmune."
+        ],
+        a: "Filtrar la sangre para regular su composición y eliminar desechos."
+    },
+    // --- RAMAS DE LA ANATOMÍA ---
+    {
+        title: "Anatomía Sistémica",
+        info: "Es un método para estudiar el cuerpo 'por capítulos'. En lugar de aprender todo sobre una región a la vez, se estudia un <strong>sistema corporal</strong> completo antes de pasar al siguiente. Por ejemplo, se estudian todos los huesos del cuerpo (sistema esquelético), luego todos los músculos (sistema muscular), y así sucesivamente.",
+        q: "Un estudiante de medicina decide estudiar primero todos los componentes del sistema nervioso antes de abordar cualquier otro sistema. ¿Qué enfoque anatómico está utilizando?",
+        o: [
+            "Anatomía Regional",
+            "Anatomía de Superficie",
+            "Anatomía Sistémica",
+            "Anatomía Patológica"
+        ],
+        a: "Anatomía Sistémica"
+    },
+    {
+        title: "Anatomía Regional",
+        info: "Este es el enfoque de 'estudiar por zonas'. En vez de seguir un sistema por todo el cuerpo, se elige una <strong>región</strong> específica, como el tórax o la cabeza, y se estudian todas las estructuras que contiene (huesos, músculos, nervios, vasos) y sus relaciones espaciales. Es el método preferido para la cirugía.",
+        q: "¿Cuál de las siguientes afirmaciones describe mejor la anatomía regional o topográfica?",
+        o: [
+            "El estudio del cuerpo dividido en sistemas de órganos.",
+            "El estudio de todas las estructuras contenidas en un área específica del cuerpo.",
+            "El estudio de las estructuras visibles o palpables bajo la piel.",
+            "El estudio del desarrollo del cuerpo desde la fecundación."
+        ],
+        a: "El estudio de todas las estructuras contenidas en un área específica del cuerpo."
+    },
+    {
+        title: "Anatomía de Superficie",
+        info: "Es el arte de 'mapear' las estructuras internas del cuerpo basándose en lo que se puede <strong>ver o palpar en el exterior</strong>. Por ejemplo, saber dónde presionar en la muñeca para sentir el pulso de la arteria radial, o dónde colocar un estetoscopio para escuchar una válvula del corazón, es aplicar la anatomía de superficie.",
+        q: "Un fisioterapeuta palpa la espalda de un paciente para localizar las apófisis espinosas de las vértebras. ¿Qué rama de la anatomía está aplicando principalmente?",
+        o: [
+            "Anatomía Microscópica",
+            "Anatomía del Desarrollo",
+            "Anatomía Comparada",
+            "Anatomía de Superficie"
+        ],
+        a: "Anatomía de Superficie"
+    },
+    {
+        title: "Anatomía Clínica",
+        info: "Esta rama es el 'puente' entre el conocimiento anatómico y la <strong>práctica médica</strong>. No solo describe dónde está una estructura, sino por qué es importante saberlo para diagnosticar una enfermedad, realizar un procedimiento o interpretar una imagen. Responde a la pregunta: '¿Y esto para qué me sirve en el hospital?'",
+        q: "¿Cuál es el enfoque principal de la anatomía clínica o aplicada?",
+        o: [
+            "Comparar la anatomía de los humanos con la de otros animales.",
+            "Estudiar la historia del descubrimiento de las partes del cuerpo.",
+            "Relacionar el conocimiento de la estructura corporal con el diagnóstico y tratamiento de enfermedades.",
+            "Observar los tejidos del cuerpo bajo un potente microscopio."
+        ],
+        a: "Relacionar el conocimiento de la estructura corporal con el diagnóstico y tratamiento de enfermedades."
+    },
+    // --- IMAGENOLOGÍA ---
+    {
+        title: "Radiología Convencional (Rayos X)",
+        info: "Es la técnica de imagen más antigua. Utiliza radiación ionizante que atraviesa el cuerpo. Las estructuras densas como el <strong>hueso</strong> la bloquean y se ven blancas (<strong>radiopacas</strong>), mientras que las estructuras blandas o llenas de aire como los <strong>pulmones</strong> la dejan pasar y se ven oscuras (<strong>radiolúcidas</strong>).",
+        q: "En una radiografía de tórax, ¿por qué los huesos de las costillas se ven blancos?",
+        o: [
+            "Porque son menos densos que el aire de los pulmones.",
+            "Porque son estructuras densas que absorben la radiación X (radiopacas).",
+            "Porque reflejan las ondas de sonido utilizadas (ecogénicas).",
+            "Porque contienen una gran cantidad de agua."
+        ],
+        a: "Porque son estructuras densas que absorben la radiación X (radiopacas)."
+    },
+    {
+        title: "Ultrasonografía (Ecografía)",
+        info: "Esta técnica es fundamentalmente distinta porque <strong>no utiliza radiación ionizante</strong>, lo que la hace muy segura. Funciona emitiendo <strong>ondas de sonido</strong> de alta frecuencia y recogiendo sus 'ecos' al rebotar en los órganos para formar una imagen en tiempo real. Es excelente para ver tejidos blandos y es la técnica de elección en obstetricia.",
+        q: "¿Cuál es la característica principal de la ultrasonografía que la diferencia de los Rayos X y la Tomografía?",
+        o: [
+            "Produce imágenes en color de alta resolución.",
+            "Es la mejor técnica para visualizar el interior de los huesos.",
+            "Utiliza un potente campo magnético para generar las imágenes.",
+            "No utiliza radiación ionizante, sino ondas de sonido."
+        ],
+        a: "No utiliza radiación ionizante, sino ondas de sonido."
+    },
+    {
+        title: "Tomografía Computarizada (TC)",
+        info: "Piensa en ella como una versión súper avanzada de los Rayos X. En lugar de una sola foto, una máquina de TC toma múltiples imágenes de rayos X desde diferentes ángulos alrededor del cuerpo. Una computadora las combina para crear <strong>imágenes transversales</strong> detalladas, como si fueran 'rebanadas' del cuerpo.",
+        q: "¿Qué tipo de imagen es el resultado característico de una Tomografía Computarizada?",
+        o: [
+            "Una imagen bidimensional plana, como una sombra.",
+            "Una serie de imágenes transversales o 'cortes' del cuerpo.",
+            "Un video en tiempo real del movimiento de los órganos.",
+            "Un mapa de la actividad metabólica de las células."
+        ],
+        a: "Una serie de imágenes transversales o 'cortes' del cuerpo."
+    },
+    {
+        title: "Resonancia Magnética (RM)",
+        info: "Esta técnica tampoco usa radiación ionizante. En su lugar, utiliza un <strong>campo magnético</strong> extremadamente potente y ondas de radio para alinear temporalmente los protones de agua en el cuerpo. Es la modalidad 'reina' para visualizar <strong>tejidos blandos</strong> con un detalle exquisito, como el cerebro, los ligamentos, los tendones y los músculos.",
+        q: "¿En qué situación clínica sería la Resonancia Magnética la técnica de imagen más indicada?",
+        o: [
+            "Para una radiografía de tórax de rutina.",
+            "Para confirmar una fractura simple en un brazo.",
+            "Para evaluar una rotura de ligamentos en la rodilla.",
+            "Para una primera evaluación de un traumatismo craneal en urgencias (la TC es más rápida)."
+        ],
+        a: "Para evaluar una rotura de ligamentos en la rodilla."
+    },
+    {
+        title: "Medicina Nuclear",
+        info: "A diferencia de otras técnicas que muestran la 'anatomía' (la forma), la medicina nuclear se especializa en mostrar la 'fisiología' (la <strong>función</strong>). Se introduce en el cuerpo una pequeña cantidad de un material radiactivo (<strong>radiotrazador</strong>) que se acumula en un órgano específico, permitiendo ver cómo está trabajando dicho órgano.",
+        q: "¿Cuál es la principal ventaja de las técnicas de medicina nuclear frente a la TC o la RM?",
+        o: [
+            "Son más rápidas y económicas de realizar.",
+            "No utilizan ningún tipo de radiación.",
+            "Proporcionan información sobre la función de un órgano, no solo su estructura.",
+            "Ofrecen mayor detalle de las estructuras óseas."
+        ],
+        a: "Proporcionan información sobre la función de un órgano, no solo su estructura."
+    },
+    {
+        title: "Tomografía por Emisión de Positrones (PET)",
+        info: "Es un tipo avanzado de medicina nuclear que muestra la <strong>actividad metabólica</strong> de las células. Generalmente se usa un radiotrazador similar a la glucosa (azúcar). Las células que consumen mucha energía, como las <strong>células cancerosas</strong> o las neuronas muy activas, captan más trazador y 'brillan' en la imagen, delatando su hiperactividad.",
+        q: "La Tomografía por Emisión de Positrones (PET) es especialmente útil en oncología porque puede detectar tumores. ¿Qué propiedad de las células cancerosas aprovecha esta técnica?",
+        o: [
+            "Su gran tamaño en comparación con las células normales.",
+            "Su alto consumo de glucosa y su elevada actividad metabólica.",
+            "Su capacidad para bloquear los rayos X.",
+            "Su alto contenido de agua."
+        ],
+        a: "Su alto consumo de glucosa y su elevada actividad metabólica."
+    },
+    {
+        title: "Definición de Piel",
+        info: "La piel no es solo una cubierta, es el <strong>órgano más grande del cuerpo</strong>. Forma una barrera protectora, flexible y resistente entre el mundo exterior y nuestros tejidos internos. Es un órgano complejo con múltiples capas, anexos y funciones vitales como la termorregulación y la sensibilidad.",
+        q: "¿Cuál de las siguientes afirmaciones sobre la piel es la más precisa desde el punto de vista anatómico?",
+        o: [
+            "Es un tejido simple, no un órgano.",
+            "Es el órgano más grande del cuerpo, con funciones complejas.",
+            "Su única función es la protección contra golpes.",
+            "Está compuesta por una sola capa de células."
+        ],
+        a: "Es el órgano más grande del cuerpo, con funciones complejas."
+    },
+    {
+        title: "Definición de Fascias",
+        info: "Imagina unas finas pero resistentes 'envolturas' de celofán dentro de tu cuerpo. Eso son las <strong>fascias</strong>. Son láminas de <strong>tejido conectivo</strong> que envuelven, separan y conectan casi todas las estructuras, desde músculos individuales hasta grupos de órganos. Proporcionan soporte y permiten el deslizamiento entre estructuras.",
+        q: "¿Cuál es la naturaleza y función principal de las fascias?",
+        o: [
+            "Son capas de tejido muscular que generan movimiento.",
+            "Son nervios que transmiten información sensorial.",
+            "Son láminas de tejido conectivo que envuelven y organizan las estructuras corporales.",
+            "Son glándulas que producen sudor para enfriar el cuerpo."
+        ],
+        a: "Son láminas de tejido conectivo que envuelven y organizan las estructuras corporales."
+    },
+    {
+        title: "La Embriología",
+        info: "Esta rama es como ver la 'película' de nuestro desarrollo antes de nacer. Estudia el proceso dinámico y ordenado desde una sola célula hasta la formación completa de un bebé. Es fundamental para entender no solo el desarrollo normal, sino también por qué a veces ocurren <strong>anomalías congénitas</strong>.",
+        q: "Según la descripción, ¿cuál es el enfoque principal de la embriología?",
+        o: [
+            "El estudio del desarrollo de un organismo desde la fecundación hasta el nacimiento.",
+            "El análisis de los tejidos corporales a través de un microscopio.",
+            "El estudio de las alteraciones que las enfermedades causan en los órganos.",
+            "La comparación de la anatomía entre diferentes especies de seres vivos."
+        ],
+        a: "El estudio del desarrollo de un organismo desde la fecundación hasta el nacimiento."
+    },
+    {
+        title: "La Histología",
+        info: "Si la anatomía es ver el 'edificio' del cuerpo, la histología es usar un microscopio para ver de qué están hechos los 'ladrillos' y muros, es decir, los <strong>tejidos</strong>. Permite entender cómo las células se agrupan y organizan para cumplir funciones específicas, como contraerse (tejido muscular) o transmitir señales (tejido nervioso).",
+        q: "¿Qué afirmación describe mejor el campo de la histología?",
+        o: [
+            "El estudio de las células de forma individual y aislada.",
+            "La observación de los órganos completos y sus relaciones.",
+            "El análisis microscópico de la estructura y organización de los tejidos corporales.",
+            "El estudio de las funciones químicas que ocurren dentro de las células."
+        ],
+        a: "El análisis microscópico de la estructura y organización de los tejidos corporales."
+    },
+    {
+        title: "Anatomía Patológica",
+        info: "Piensa en un 'detective' que investiga la escena de un crimen en el cuerpo. Esta rama estudia cómo las <strong>enfermedades alteran la estructura</strong> normal (la morfología) de los tejidos y órganos. Observar estos cambios es crucial para poder realizar un diagnóstico preciso, por ejemplo, al analizar una biopsia.",
+        q: "De acuerdo con el texto, ¿cuál es el objetivo central de la anatomía patológica?",
+        o: [
+            "Estudiar la estructura del cuerpo humano en un estado completamente sano.",
+            "Prevenir que las enfermedades aparezcan en primer lugar.",
+            "Identificar y estudiar las alteraciones estructurales en el cuerpo causadas por enfermedades.",
+            "Utilizar imágenes como Rayos X para ver el interior del cuerpo."
+        ],
+        a: "Identificar y estudiar las alteraciones estructurales en el cuerpo causadas por enfermedades."
+    },
+    // --- PLANIMETRÍA ---
+    {
+        title: "Plano Sagital",
+        info: "Imagina una línea que te divide exactamente como a una manzana, en una mitad <strong>derecha</strong> y otra <strong>izquierda</strong>. Ese es el plano sagital. Su nombre viene del latín 'sagitta' (flecha), ya que sigue la trayectoria que tendría una flecha disparada de frente. Es ideal para ver estructuras de la línea media.",
+        q: "Si quisieras describir una estructura anatómica en términos de qué tan a la derecha o izquierda está del centro del cuerpo, ¿qué plano usarías como referencia principal?",
+        o: [
+            "Plano Transversal",
+            "Plano Coronal",
+            "Plano Sagital",
+            "Plano Oblicuo"
+        ],
+        a: "Plano Sagital"
+    },
+    {
+        title: "Plano Coronal o Frontal",
+        info: "Este plano divide el cuerpo como si te pusieran un panel de vidrio justo en la mitad de los hombros, separando todo en una parte <strong>anterior (la de adelante)</strong> y una <strong>posterior (la de atrás)</strong>. Es como si te vieran perfectamente de frente o de espaldas. Muy útil para comparar la posición de órganos internos, como los riñones.",
+        q: "El plano coronal es una división anatómica que resulta en dos porciones del cuerpo. ¿Cuáles son?",
+        o: [
+            "Superior e inferior",
+            "Derecha e izquierda",
+            "Anterior (ventral) y posterior (dorsal)",
+            "Superficial y profunda"
+        ],
+        a: "Anterior (ventral) y posterior (dorsal)"
+    },
+    {
+        title: "Plano Transversal",
+        info: "Es el clásico corte del 'mago que corta a una persona en dos'. Este plano es horizontal y divide el cuerpo en una parte <strong>superior</strong> y otra <strong>inferior</strong>. Las imágenes de una Tomografía Computarizada (TC) suelen ser una serie de 'rebanadas' o cortes en este plano, que se ven de arriba hacia abajo.",
+        q: "¿Cuál es el resultado de aplicar un plano transversal al cuerpo humano?",
+        o: [
+            "Una sección derecha y una izquierda.",
+            "Una sección superior y una inferior.",
+            "Una sección frontal y una trasera.",
+            "Dos mitades simétricas."
+        ],
+        a: "Una sección superior y una inferior."
+    },
+    // --- EJES ANATÓMICOS ---
+    {
+        title: "Eje Cefalocaudal o Longitudinal",
+        info: "Este eje es una línea vertical que atraviesa el cuerpo desde el punto más alto de la <strong>cabeza (céfalo)</strong> hasta los <strong>pies (cauda)</strong>. Es el eje del movimiento de rotación, como cuando un patinador gira sobre sí mismo. Sigue la longitud del cuerpo.",
+        q: "El movimiento de girar la cabeza para decir 'no' ocurre alrededor de un eje. ¿Cuál es este eje?",
+        o: [
+            "Eje Anteroposterior",
+            "Eje Transversal",
+            "Eje Cefalocaudal o Longitudinal",
+            "Eje Medial"
+        ],
+        a: "Eje Cefalocaudal o Longitudinal"
+    },
+    // --- TÉRMINOS DE POSICIÓN Y DIRECCIÓN ---
+    {
+        title: "Superior e Inferior",
+        info: "Son los términos más intuitivos. <strong>Superior (o craneal)</strong> significa 'más cerca de la cabeza', mientras que <strong>Inferior (o caudal)</strong> significa 'más cerca de los pies'. Por ejemplo, la nariz es superior a la boca, y el estómago es inferior al corazón.",
+        q: "Usando los términos de posición, ¿cómo describirías la relación entre las rodillas y los tobillos?",
+        o: [
+            "Las rodillas son inferiores a los tobillos.",
+            "Las rodillas son superiores a los tobillos.",
+            "Las rodillas son mediales a los tobillos.",
+            "Las rodillas son anteriores a los tobillos."
+        ],
+        a: "Las rodillas son superiores a los tobillos."
+    },
+    {
+        title: "Anterior y Posterior",
+        info: "<strong>Anterior (o ventral)</strong> se refiere a 'la parte de adelante' del cuerpo, donde está el vientre. <strong>Posterior (o dorsal)</strong> se refiere a 'la parte de atrás', donde está el dorso. Así, el esternón es anterior al corazón, y la columna vertebral es posterior a él.",
+        q: "¿Qué par de estructuras están correctamente descritas usando los términos anterior/posterior?",
+        o: [
+            "Los talones son anteriores a los dedos del pie.",
+            "El ombligo es posterior a la columna vertebral.",
+            "Los omóplatos son posteriores a las costillas.",
+            "La nariz es posterior a las orejas."
+        ],
+        a: "Los omóplatos son posteriores a las costillas."
+    },
+    {
+        title: "Medial y Lateral",
+        info: "Estos términos usan la línea media del cuerpo como referencia. <strong>Medial</strong> significa 'más cerca de la línea media', mientras que <strong>Lateral</strong> significa 'más alejado de la línea media'. El dedo meñique es el más medial de la mano, mientras que el pulgar es el más lateral (en posición anatómica).",
+        q: "¿Cuál de las siguientes afirmaciones utiliza correctamente los términos medial y lateral?",
+        o: [
+            "Las orejas son mediales a los ojos.",
+            "El corazón es lateral a los pulmones.",
+            "La nariz es medial a las mejillas.",
+            "Los hombros son mediales al esternón."
+        ],
+        a: "La nariz es medial a las mejillas."
+    },
+    {
+        title: "Proximal y Distal",
+        info: "Estos términos se usan principalmente para las extremidades (brazos y piernas). <strong>Proximal</strong> se refiere a lo que está más 'próximo' al punto de unión con el tronco. <strong>Distal</strong> se refiere a lo que está más 'distante'. Por ello, el codo es proximal a la muñeca, pero distal al hombro.",
+        q: "Al describir el miembro inferior, ¿qué relación de posición es la correcta?",
+        o: [
+            "El tobillo es proximal a la rodilla.",
+            "La cadera es distal al fémur.",
+            "El pie es distal a la rodilla.",
+            "La rodilla es distal a la cadera."
+        ],
+        a: "El pie es distal a la rodilla."
+    },
+    // --- POSICIÓN ANATÓMICA ---
+    {
+        title: "La Posición Anatómica",
+        info: "Es la postura de referencia universal para evitar confusiones. Es un 'acuerdo' entre todos los profesionales de la salud. La persona está de pie, mirando al frente, con los pies juntos. El detalle clave y a menudo olvidado es que los miembros superiores están a los lados, pero con las <strong>palmas de las manos mirando hacia adelante</strong>.",
+        q: "Además de estar de pie y mirando al frente, ¿cuál es la característica más distintiva y crucial de la posición anatómica estándar?",
+        o: [
+            "Los brazos cruzados sobre el pecho.",
+            "Las palmas de las manos mirando hacia el cuerpo.",
+            "Las palmas de las manos mirando hacia adelante.",
+            "Los pies separados a la altura de los hombros."
+        ],
+        a: "Las palmas de las manos mirando hacia adelante."
+    },
+    // --- CAVIDADES CORPORALES ---
+    {
+        title: "Cavidad Dorsal",
+        info: "Es como la 'bóveda de seguridad' del cuerpo, localizada en la parte posterior (dorsal). Está completamente rodeada de hueso para proteger al frágil sistema nervioso central. Se divide en la <strong>Cavidad Craneal</strong>, que alberga el cerebro, y el <strong>Canal Vertebral</strong>, que protege la médula espinal.",
+        q: "La cavidad dorsal es fundamental para la protección del sistema nervioso central. ¿Qué dos compartimentos la forman?",
+        o: [
+            "La cavidad torácica y la abdominal.",
+            "La cavidad pleural y el mediastino.",
+            "La cavidad craneal y el canal vertebral.",
+            "La cavidad abdominal y la pélvica."
+        ],
+        a: "La cavidad craneal y el canal vertebral."
+    },
+    {
+        title: "Cavidad Torácica",
+        info: "Esta cavidad es el pecho. Está protegida por las costillas y contiene órganos vitales. Dentro de ella hay sub-cavidades: las dos <strong>Cavidades Pleurales</strong> (una para cada pulmón) y el <strong>Mediastino</strong>, que es el espacio central donde se alojan el corazón, los grandes vasos y el esófago.",
+        q: "¿Qué estructura anatómica se encuentra en el mediastino, dentro de la cavidad torácica?",
+        o: [
+            "El estómago.",
+            "El cerebro.",
+            "La médula espinal.",
+            "El corazón."
+        ],
+        a: "El corazón."
+    },
+    {
+        title: "Cavidad Abdominopélvica",
+        info: "Es la cavidad más grande del cuerpo, ubicada debajo del diafragma. Aunque es una sola gran cavidad, se suele dividir en dos regiones para su estudio: la <strong>Cavidad Abdominal</strong> (superior), que contiene el estómago, hígado e intestinos, y la <strong>Cavidad Pélvica</strong> (inferior), que alberga la vejiga, el recto y los órganos reproductores.",
+        q: "El hígado, el estómago y los intestinos son órganos vitales localizados principalmente en:",
+        o: [
+            "La porción pélvica de la cavidad abdominopélvica.",
+            "La porción abdominal de la cavidad abdominopélvica.",
+            "La cavidad torácica.",
+            "El mediastino."
+        ],
+        a: "La porción abdominal de la cavidad abdominopélvica."
+    },
+    {
+        title: "El Tronco",
+        info: "El tronco es el eje central del cuerpo, al que se conectan la cabeza, el cuello y las extremidades. No es solo un conector, sino que alberga y protege la mayoría de los órganos vitales en sus tres subdivisiones principales: el <strong>tórax</strong> (arriba), el <strong>abdomen</strong> (en medio) y la <strong>pelvis</strong> (abajo).",
+        q: "¿Cuál es la función principal del tronco en la división corporal?",
+        o: [
+            "Únicamente permitir el movimiento de las extremidades.",
+            "Servir como eje central que contiene los órganos vitales en el tórax, abdomen y pelvis.",
+            "Controlar todas las funciones nerviosas del cuerpo.",
+            "Producir todas las células sanguíneas del organismo."
+        ],
+        a: "Servir como eje central que contiene los órganos vitales en el tórax, abdomen y pelvis."
+    },
+    {
+        title: "El Miembro Superior",
+        info: "Coloquialmente le llamamos 'brazo' a toda la extremidad, pero en anatomía es más específico. El miembro superior se divide en: el <strong>brazo</strong> (la sección entre el hombro y el codo), el <strong>antebrazo</strong> (entre el codo y la muñeca) y la <strong>mano</strong>. Esta precisión es clave para localizar lesiones.",
+        q: "Según la terminología anatómica precisa, ¿a qué se refiere el término 'brazo'?",
+        o: [
+            "A toda la extremidad, desde el hombro hasta los dedos.",
+            "A la sección comprendida entre el codo y la muñeca.",
+            "A la sección comprendida entre el hombro y el codo.",
+            "Únicamente a la articulación del hombro."
+        ],
+        a: "A la sección comprendida entre el hombro y el codo."
+    },
+    {
+        title: "El Miembro Inferior",
+        info: "Al igual que con el brazo, el término 'pierna' tiene un significado preciso. El miembro inferior se compone de: el <strong>muslo</strong> (la sección entre la cadera y la rodilla), la <strong>pierna</strong> (entre la rodilla y el tobillo) y el <strong>pie</strong>. Su estructura robusta está adaptada para soportar el peso y permitir la locomoción.",
+        q: "En una descripción anatómica, ¿qué segmento del cuerpo se encuentra entre la rodilla y el tobillo?",
+        o: [
+            "El muslo.",
+            "La pierna.",
+            "El pie.",
+            "El antebrazo."
+        ],
+        a: "La pierna."
+    },
+    // --- NIVELES DE ORGANIZACIÓN ---
+    {
+        title: "Nivel Químico",
+        info: "Es el nivel más fundamental de todos, el 'alfabeto' de la vida. Aquí encontramos a los <strong>átomos</strong> (como oxígeno, carbono, hidrógeno) que se unen para formar <strong>moléculas</strong> (como el agua o las proteínas). Por sí solos no están vivos, pero son los componentes esenciales de todo lo que sí lo está.",
+        q: "¿Qué componentes constituyen el nivel químico de organización?",
+        o: [
+            "Únicamente células vivas.",
+            "Tejidos y órganos completos.",
+            "Átomos y las moléculas que estos forman.",
+            "Sistemas de órganos funcionando en conjunto."
+        ],
+        a: "Átomos y las moléculas que estos forman."
+    },
+    {
+        title: "Nivel Celular",
+        info: "Este es el primer nivel en el que podemos hablar de 'vida'. Las moléculas del nivel anterior se organizan de una forma muy compleja para crear una <strong>célula</strong>, la unidad estructural y funcional más pequeña de un organismo. Si el nivel químico son las 'letras', la célula es la primera 'palabra' con significado.",
+        q: "¿Qué característica fundamental distingue al nivel celular del nivel químico?",
+        o: [
+            "El nivel celular es más pequeño que el nivel químico.",
+            "El nivel celular representa la unidad más pequeña considerada viva.",
+            "El nivel celular está compuesto solo por átomos de oxígeno.",
+            "El nivel químico es más complejo que el nivel celular."
+        ],
+        a: "El nivel celular representa la unidad más pequeña considerada viva."
+    },
+    {
+        title: "Nivel Tisular (Tejidos)",
+        info: "Cuando células similares se agrupan y cooperan para realizar una función específica, forman un <strong>tejido</strong>. Es como si 'palabras' (células) con un propósito común se unieran para formar una 'frase' (tejido). Hay cuatro tipos básicos de tejidos en el cuerpo: epitelial, conectivo, muscular y nervioso.",
+        q: "En la jerarquía de organización biológica, ¿cómo se forma un tejido?",
+        o: [
+            "Por la agrupación de diferentes órganos.",
+            "Por la combinación de varios sistemas.",
+            "Por la agrupación de células similares que trabajan en conjunto.",
+            "Por la unión de moléculas inorgánicas."
+        ],
+        a: "Por la agrupación de células similares que trabajan en conjunto."
+    },
+    {
+        title: "Nivel de Órganos",
+        info: "Aquí, diferentes tipos de tejidos se unen para formar una estructura reconocible, como el corazón, el estómago o el cerebro. Cada <strong>órgano</strong> tiene una forma y una función muy específicas. Por ejemplo, el corazón tiene tejido muscular para bombear, tejido nervioso para controlar el ritmo y tejido conectivo para formar las válvulas.",
+        q: "¿Cuál es la definición más precisa de un órgano?",
+        o: [
+            "Un grupo de células idénticas.",
+            "Una estructura compuesta por dos o más tipos de tejidos que realiza una función específica.",
+            "Cualquier parte del cuerpo que se puede ver a simple vista.",
+            "Un conjunto de moléculas que trabajan juntas."
+        ],
+        a: "Una estructura compuesta por dos o más tipos de tejidos que realiza una función específica."
+    },
+    {
+        title: "Nivel de Aparatos y Sistemas",
+        info: "Este nivel describe cómo los órganos se 'asocian' para cumplir funciones más grandes. Un <strong>sistema</strong> es un grupo de órganos con un origen y estructura similares (como el sistema nervioso). Un <strong>aparato</strong> es un grupo de órganos con diferente origen pero que contribuyen a una misma función (como el aparato digestivo).",
+        q: "El sistema digestivo incluye la boca, el esófago, el estómago y los intestinos. ¿Qué nivel de organización representa este conjunto de órganos trabajando coordinadamente?",
+        o: [
+            "Nivel celular.",
+            "Nivel tisular.",
+            "Nivel de organismo.",
+            "Nivel de aparatos y sistemas."
+        ],
+        a: "Nivel de aparatos y sistemas."
+    },
+    // --- SISTEMAS CORPORALES ---
+    {
+        title: "Sistema Tegumentario",
+        info: "Es mucho más que solo piel. Este sistema es la envoltura protectora de todo nuestro cuerpo. Está formado por la <strong>piel</strong> y sus estructuras anexas, las <strong>faneras</strong>: pelo, uñas y glándulas (sudoríparas y sebáceas). Actúa como una barrera, regula la temperatura y nos da el sentido del tacto.",
+        q: "¿Qué componentes, además de la piel, forman parte del sistema tegumentario?",
+        o: [
+            "Los huesos y los cartílagos.",
+            "Los músculos y los tendones.",
+            "El pelo, las uñas y diversas glándulas.",
+            "El cerebro y la médula espinal."
+        ],
+        a: "El pelo, las uñas y diversas glándulas."
+    },
+    {
+        title: "Sistema Esquelético",
+        info: "Este sistema es el 'armazón' o 'andamiaje' interno del cuerpo. Proporciona soporte estructural, protege órganos vitales (como el cráneo al cerebro), permite el movimiento al servir de anclaje a los músculos y produce células sanguíneas en la médula ósea. Está compuesto por <strong>huesos, cartílagos y ligamentos</strong>.",
+        q: "Además de proporcionar soporte y permitir el movimiento, ¿qué otra función vital realiza el sistema esquelético?",
+        o: [
+            "Bombear la sangre por todo el cuerpo.",
+            "Producir hormonas para regular el metabolismo.",
+            "Proteger órganos vitales y producir células sanguíneas.",
+            "Digerir los alimentos y absorber nutrientes."
+        ],
+        a: "Proteger órganos vitales y producir células sanguíneas."
+    },
+    {
+        title: "Sistema Muscular",
+        info: "Es el 'motor' del cuerpo. Su función principal es la <strong>contracción</strong>, lo que nos permite movernos, mantener la postura y generar calor corporal. Se asocia estrechamente con el sistema esquelético para producir el movimiento voluntario, pero también incluye músculos involuntarios como el del corazón.",
+        q: "¿Cuál es la característica funcional principal del tejido que compone el sistema muscular?",
+        o: [
+            "Su capacidad para transmitir impulsos eléctricos.",
+            "Su capacidad para contraerse y generar fuerza.",
+            "Su capacidad para secretar hormonas.",
+            "Su capacidad para filtrar la sangre."
+        ],
+        a: "Su capacidad para contraerse y generar fuerza."
+    },
+    {
+        title: "Sistema Nervioso",
+        info: "Es el 'centro de mando' y la red de 'internet' de alta velocidad del cuerpo. A través de impulsos eléctricos, detecta cambios en el entorno, procesa información y coordina las respuestas de casi todas las demás partes del cuerpo. Está formado por el <strong>cerebro, la médula espinal y los nervios</strong>.",
+        q: "Considerando su función, ¿cuál es el papel principal del sistema nervioso?",
+        o: [
+            "Transportar oxígeno a las células.",
+            "Combatir infecciones y agentes patógenos.",
+            "Regular funciones corporales de forma lenta a través de hormonas.",
+            "Procesar información y coordinar respuestas rápidas en el cuerpo."
+        ],
+        a: "Procesar información y coordinar respuestas rápidas en el cuerpo."
+    },
+    {
+        title: "Sistema Endocrino",
+        info: "Si el sistema nervioso es un mensaje de 'email' (rápido y directo), el sistema endocrino es el 'correo postal' (más lento pero de efecto duradero). Funciona a través de <strong>glándulas</strong> que liberan mensajeros químicos llamados <strong>hormonas</strong> en la sangre para regular procesos como el crecimiento, el metabolismo y el estado de ánimo.",
+        q: "¿Cuál es el mecanismo de acción característico del sistema endocrino?",
+        o: [
+            "La transmisión de impulsos eléctricos a través de los nervios.",
+            "La liberación de hormonas en el torrente sanguíneo para regular funciones corporales.",
+            "La contracción de fibras para producir movimiento.",
+            "La creación de una barrera física contra el exterior."
+        ],
+        a: "La liberación de hormonas en el torrente sanguíneo para regular funciones corporales."
+    },
+    {
+        title: "Sistema Cardiovascular",
+        info: "Es el sistema de 'transporte' del cuerpo. Impulsado por una bomba central, el <strong>corazón</strong>, se encarga de mover la <strong>sangre</strong> a través de una red de 'tuberías' (los <strong>vasos sanguíneos</strong>). Su misión es llevar oxígeno y nutrientes a todas las células y retirar los desechos.",
+        q: "¿Cuáles son los tres componentes principales que integran el sistema cardiovascular?",
+        o: [
+            "Cerebro, médula espinal y nervios.",
+            "Pulmones, tráquea y bronquios.",
+            "Corazón, sangre y vasos sanguíneos.",
+            "Huesos, músculos y articulaciones."
+        ],
+        a: "Corazón, sangre y vasos sanguíneos."
+    },
+    {
+        title: "Sistema Linfático",
+        info: "Este sistema es como el 'equipo de seguridad y saneamiento' del cuerpo. Tiene dos funciones principales: recoge el exceso de líquido de los tejidos para devolverlo a la sangre y, lo más importante, es la sede del sistema inmunitario. Los <strong>ganglios linfáticos</strong> y los glóbulos blancos que contiene nos <strong>defienden de las infecciones</strong>.",
+        q: "Además de drenar líquidos, ¿cuál es la otra función crucial del sistema linfático?",
+        o: [
+            "Regular la temperatura corporal.",
+            "Digerir carbohidratos.",
+            "Jugar un papel central en la defensa inmunitaria del cuerpo.",
+            "Producir adrenalina."
+        ],
+        a: "Jugar un papel central en la defensa inmunitaria del cuerpo."
+    },
+    {
+        title: "La Epidermis",
+        info: "Es la capa más superficial de la piel, nuestro 'escudo' contra el mundo exterior. Está formada por tejido epitelial y es <strong>avascular</strong>, lo que significa que no tiene sus propios vasos sanguíneos; se nutre por difusión desde la capa inferior. Su célula principal es el queratinocito, que produce una proteína resistente llamada queratina.",
+        q: "¿Cuál es una característica distintiva de la epidermis?",
+        o: [
+            "Contiene una gran cantidad de vasos sanguíneos y nervios.",
+            "Es la capa más gruesa de la piel y almacena grasa.",
+            "Es una capa avascular que sirve principalmente como barrera protectora.",
+            "Su función principal es producir sudor y sebo."
+        ],
+        a: "Es una capa avascular que sirve principalmente como barrera protectora."
+    },
+    {
+        title: "La Dermis",
+        info: "Situada justo debajo de la epidermis, la dermis es la capa 'de soporte' y funcional de la piel. Es un tejido conectivo fuerte y flexible que alberga una gran cantidad de estructuras: <strong>vasos sanguíneos</strong> que nutren, <strong>nervios</strong> para la sensibilidad, <strong>folículos pilosos</strong> de donde crece el pelo, y diversas glándulas.",
+        q: "Si la epidermis es el 'escudo', ¿qué representa la dermis?",
+        o: [
+            "La capa de aislamiento térmico compuesta de grasa.",
+            "La capa de soporte que contiene la 'infraestructura' como vasos, nervios y glándulas.",
+            "Una capa de células muertas que se descama continuamente.",
+            "La capa que conecta directamente la piel con los huesos."
+        ],
+        a: "La capa de soporte que contiene la 'infraestructura' como vasos, nervios y glándulas."
+    },
+    {
+        title: "La Hipodermis",
+        info: "Es la capa más profunda, también conocida como tejido subcutáneo. No es técnicamente parte de la piel, pero la conecta con los músculos y huesos subyacentes. Está compuesta principalmente por <strong>tejido adiposo (grasa)</strong>, funcionando como un excelente aislante térmico, reserva de energía y amortiguador de golpes.",
+        q: "¿Cuál es la composición y función principal de la hipodermis?",
+        o: [
+            "Tejido epitelial que sirve de barrera protectora.",
+            "Tejido nervioso que procesa la información táctil.",
+            "Tejido conectivo denso que da resistencia a la piel.",
+            "Tejido adiposo que almacena energía y aísla el cuerpo."
+        ],
+        a: "Tejido adiposo que almacena energía y aísla el cuerpo."
+    },
+    {
+        title: "Células de la Epidermis",
+        info: "La epidermis es un vecindario con varios habitantes. Los más numerosos son los <strong>queratinocitos</strong> (los 'ladrillos' protectores). También están los <strong>melanocitos</strong> (los 'pintores' que producen el pigmento melanina para el color y la protección UV) y las <strong>células de Langerhans</strong> (los 'guardias' del sistema inmune).",
+        q: "La protección contra la radiación ultravioleta (UV) en la epidermis es una función principal de:",
+        o: [
+            "Los queratinocitos.",
+            "Las células de Langerhans.",
+            "Los melanocitos.",
+            "Las células de Merkel."
+        ],
+        a: "Los melanocitos."
+    },
+    {
+        title: "Anexos: El Pelo",
+        info: "Son filamentos de <strong>queratina</strong>, la misma proteína de la capa superficial de la piel y las uñas. Cada pelo crece a partir de un <strong>folículo piloso</strong>, una estructura en forma de saco en la dermis. Aunque en los humanos su función aislante es reducida, ayuda en la protección (cuero cabelludo) y en la sensibilidad.",
+        q: "¿Qué es el pelo desde un punto de vista estructural?",
+        o: [
+            "Una estructura ósea delgada que crece desde la piel.",
+            "Un filamento compuesto principalmente por la proteína queratina.",
+            "Un tipo especial de fibra muscular con capacidad de contracción.",
+            "Un nervio modificado para detectar la temperatura."
+        ],
+        a: "Un filamento compuesto principalmente por la proteína queratina."
+    },
+    {
+        title: "Anexos: Las Uñas",
+        info: "Son placas protectoras situadas en el dorso de los extremos de los dedos. Al igual que el pelo, están compuestas por una forma densa y dura de <strong>queratina</strong>. Sirven para proteger las yemas de los dedos, que son muy sensibles, y nos ayudan a manipular objetos pequeños o a rascar.",
+        q: "La principal sustancia que compone las uñas, dándoles su dureza y resistencia, es:",
+        o: [
+            "El colágeno.",
+            "La melanina.",
+            "El calcio.",
+            "La queratina."
+        ],
+        a: "La queratina."
+    },
+    {
+        title: "Glándulas Sudoríparas",
+        info: "Son el sistema de 'aire acondicionado' del cuerpo. Estas pequeñas glándulas tubulares en la dermis producen <strong>sudor</strong>, una solución principalmente de agua y sales. Cuando el sudor se evapora de la superficie de la piel, roba calor y enfría el cuerpo, un proceso clave en la <strong>termorregulación</strong>.",
+        q: "¿Cuál es el mecanismo por el cual las glándulas sudoríparas ayudan a regular la temperatura corporal?",
+        o: [
+            "Generando una capa de grasa aislante.",
+            "Liberando sebo para lubricar la piel.",
+            "Produciendo sudor que, al evaporarse, enfría la piel.",
+            "Contrayéndose para generar calor."
+        ],
+        a: "Produciendo sudor que, al evaporarse, enfría la piel."
+    },
+    {
+        title: "Glándulas Sebáceas",
+        info: "Son el sistema de 'lubricación' natural de la piel. Estas glándulas producen una sustancia aceitosa llamada <strong>sebo</strong>, que generalmente se secreta en los folículos pilosos. El sebo ayuda a impermeabilizar la piel, la mantiene flexible y evita que el pelo se vuelva quebradizo.",
+        q: "La sustancia oleosa producida por las glándulas sebáceas, que lubrica la piel y el pelo, se llama:",
+        o: [
+            "Sudor.",
+            "Queratina.",
+            "Melanina.",
+            "Sebo."
+        ],
+        a: "Sebo."
+    },
+    // --- FUNCIONES DE LA PIEL ---
+    {
+        title: "Función: Protección",
+        info: "Quizás la función más obvia de la piel es ser una <strong>barrera</strong>. Actúa a tres niveles: una barrera <strong>física</strong> contra golpes y fricción (gracias a la queratina), una barrera <strong>química</strong> contra sustancias y radiación UV (gracias a la melanina), y una barrera <strong>biológica</strong> contra patógenos (gracias a las células inmunes).",
+        q: "La protección que ofrece la piel contra los microorganismos como las bacterias es un ejemplo de su función como barrera:",
+        o: [
+            "Biológica.",
+            "Química.",
+            "Física.",
+            "Térmica."
+        ],
+        a: "Biológica."
+    },
+    {
+        title: "Función: Síntesis de Vitamina D",
+        info: "La piel actúa como una pequeña 'fábrica' que se activa con el sol. Cuando la <strong>radiación ultravioleta (UV)</strong> de la luz solar incide sobre la piel, convierte un compuesto derivado del colesterol en un precursor de la <strong>Vitamina D</strong>. Esta vitamina es esencial para que el cuerpo pueda absorber el calcio de la dieta.",
+        q: "¿Qué factor ambiental es indispensable para que la piel pueda iniciar la síntesis de vitamina D?",
+        o: [
+            "Una alta humedad en el aire.",
+            "Bajas temperaturas.",
+            "La exposición a la radiación ultravioleta (UV).",
+            "La presión atmosférica elevada."
+        ],
+        a: "La exposición a la radiación ultravioleta (UV)."
+    }
+];
+
 
         let currentCardIndex = 0;
         const userAnswers = new Array(studyData.length).fill(null);
 
-        // UI Elements
         const elements = {
             mainHeader: document.getElementById('main-header'),
             quizArea: document.getElementById('quiz-area'),
             resultsContainer: document.getElementById('results-container'),
-            cardContainer: document.getElementById('card-container'),
             studyView: document.getElementById('study-view'),
-            studyTopic: document.getElementById('study-topic'),
+            studyTitle: document.getElementById('study-title'),
             studyInfo: document.getElementById('study-info'),
             quizView: document.getElementById('quiz-view'),
             questionText: document.getElementById('question-text'),
@@ -211,7 +797,6 @@
             nextBtn: document.getElementById('next-btn'),
             restartBtn: document.getElementById('restart-btn'),
             progressBar: document.getElementById('progress-bar'),
-            progressText: document.getElementById('progress-text'),
             scoreEl: document.getElementById('score'),
             totalQuestionsEl: document.getElementById('total-questions'),
             percentageEl: document.getElementById('percentage'),
@@ -226,46 +811,47 @@
         }
 
         function renderCard() {
-            elements.cardContainer.classList.add('exiting');
+            const data = studyData[currentCardIndex];
+            
+            elements.studyView.classList.remove('hidden');
+            elements.quizView.classList.add('hidden');
+            elements.studyView.classList.remove('view-transition');
+            void elements.studyView.offsetWidth;
+            elements.studyView.classList.add('view-transition');
+            
+            elements.studyTitle.innerHTML = data.title;
+            elements.studyInfo.innerHTML = data.info;
+            
+            elements.questionText.innerHTML = data.q;
+            elements.optionsContainer.innerHTML = '';
+            
+            const shuffledOptions = [...data.o];
+            shuffleArray(shuffledOptions);
 
-            setTimeout(() => {
-                const data = studyData[currentCardIndex];
-                
-                // Reset views
-                elements.studyView.classList.remove('hidden');
-                elements.quizView.classList.add('hidden');
-                
-                // Populate study view
-                elements.studyTopic.innerHTML = data.topic;
-                elements.studyInfo.innerHTML = data.info;
-                
-                // Populate quiz view (for later)
-                elements.questionText.innerHTML = data.q;
-                elements.optionsContainer.innerHTML = '';
-                
-                const shuffledOptions = [...data.o];
-                shuffleArray(shuffledOptions);
-
-                shuffledOptions.forEach(option => {
-                    const label = document.createElement('label');
-                    label.className = 'option-label block p-4 my-2 rounded-lg border-2 border-slate-200 cursor-pointer hover:bg-slate-100';
-                    label.innerHTML = `<input type="radio" name="option" value="${option}" class="mr-3 accent-indigo-500">${option}`;
-                    label.addEventListener('click', () => handleOptionSelection(label));
-                    elements.optionsContainer.appendChild(label);
-                });
-                
-                updateProgress();
-                elements.nextBtn.classList.add('hidden');
-                elements.explanationBox.classList.add('hidden');
-                elements.cardContainer.classList.remove('exiting');
-            }, 300);
+            shuffledOptions.forEach(option => {
+                const label = document.createElement('label');
+                label.className = 'option-label block p-4 my-2 rounded-lg border-2 border-slate-200 cursor-pointer hover:bg-slate-100 font-medium';
+                label.innerHTML = `<input type="radio" name="option" value="${option}" class="sr-only">${option}`;
+                label.addEventListener('click', () => handleOptionSelection(label));
+                elements.optionsContainer.appendChild(label);
+            });
+            
+            updateProgress();
+            elements.nextBtn.classList.add('hidden');
+            elements.explanationBox.classList.add('hidden');
         }
 
         function handleOptionSelection(selectedLabel) {
-            if (userAnswers[currentCardIndex] !== null) return; // Prevent re-answering
+            if (userAnswers[currentCardIndex] !== null) return; 
 
-            document.querySelectorAll('.option-label').forEach(l => l.classList.remove('selected'));
-            selectedLabel.classList.add('selected');
+            const allLabels = document.querySelectorAll('.option-label');
+            allLabels.forEach(l => {
+                l.style.borderColor = '#e2e8f0'; // slate-200
+                l.querySelector('input').checked = false;
+            });
+            
+            selectedLabel.style.borderColor = '#6366f1'; // indigo-500
+            selectedLabel.querySelector('input').checked = true;
 
             checkAnswer(selectedLabel.querySelector('input').value);
         }
@@ -273,7 +859,6 @@
         function updateProgress() {
             const progressPercentage = ((currentCardIndex + 1) / studyData.length) * 100;
             elements.progressBar.style.width = `${progressPercentage}%`;
-            elements.progressText.textContent = `${currentCardIndex + 1} / ${studyData.length}`;
         }
 
         function checkAnswer(userAnswer) {
@@ -297,7 +882,7 @@
             if (currentCardIndex === studyData.length - 1) {
                 elements.nextBtn.textContent = "Ver Resultados";
             } else {
-                elements.nextBtn.textContent = "Siguiente Tema";
+                elements.nextBtn.textContent = "Siguiente";
             }
         }
 
@@ -306,13 +891,12 @@
             elements.explanationBox.classList.remove('hidden', 'visible');
             
             if (isCorrect) {
-                elements.explanationBox.innerHTML = `<strong class="text-green-700">¡Correcto!</strong> Recordatorio: ${data.info}`;
+                elements.explanationBox.innerHTML = `<strong class="text-green-700">¡Correcto!</strong> ${data.info}`;
                 elements.explanationBox.className = 'explanation p-4 rounded-lg bg-green-50 text-green-800 border-green-400';
             } else {
-                elements.explanationBox.innerHTML = `<strong class="text-red-700">Incorrecto.</strong> La respuesta correcta es <strong>"${data.a}"</strong>. <br>Recuerda: ${data.info}`;
+                elements.explanationBox.innerHTML = `<strong class="text-red-700">Incorrecto.</strong> La respuesta correcta es <strong>"${data.a}"</strong>.`;
                 elements.explanationBox.className = 'explanation p-4 rounded-lg bg-red-50 text-red-800 border-red-400';
             }
-            // Use timeout to trigger transition
             setTimeout(() => elements.explanationBox.classList.add('visible'), 50);
         }
         
@@ -332,16 +916,13 @@
             let message = "";
             if (percentage >= 90) {
                 message = "¡Excelente! Un dominio impresionante del material.";
-                elements.percentageEl.className = "text-5xl font-bold my-4 text-green-500";
+                elements.percentageEl.className = "text-6xl font-extrabold my-4 text-green-500";
             } else if (percentage >= 75) {
                 message = "¡Muy buen trabajo! Tienes una base sólida en el tema.";
-                elements.percentageEl.className = "text-5xl font-bold my-4 text-cyan-500";
-            } else if (percentage >= 50) {
-                message = "¡Buen esfuerzo! Sigue repasando para afianzar los conceptos.";
-                elements.percentageEl.className = "text-5xl font-bold my-4 text-indigo-500";
+                elements.percentageEl.className = "text-6xl font-extrabold my-4 text-cyan-500";
             } else {
-                message = "¡Sigue estudiando! La práctica es clave para el éxito.";
-                elements.percentageEl.className = "text-5xl font-bold my-4 text-amber-500";
+                message = "¡Buen esfuerzo! Sigue repasando para afianzar los conceptos.";
+                elements.percentageEl.className = "text-6xl font-extrabold my-4 text-indigo-500";
             }
             elements.finalMessageEl.textContent = message;
         }
@@ -359,6 +940,9 @@
         elements.startQuestionBtn.addEventListener('click', () => {
             elements.studyView.classList.add('hidden');
             elements.quizView.classList.remove('hidden');
+            elements.quizView.classList.remove('view-transition');
+            void elements.quizView.offsetWidth;
+            elements.quizView.classList.add('view-transition');
         });
 
         elements.nextBtn.addEventListener('click', () => {
@@ -372,9 +956,7 @@
         
         elements.restartBtn.addEventListener('click', startApp);
 
-        // Initial load
         startApp();
     </script>
 </body>
 </html>
-
